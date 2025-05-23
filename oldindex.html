@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Zune Web Player</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#333; margin:0; height:100vh; width:100vw; overflow:hidden; font-family:"Segoe UI", Tahoma, sans-serif; }
+    .zune-device {
+      background:#6F4E37; /* Darker Zune brown */
+      border:8px solid #444;
+      border-radius:12px;
+      width:100%; height:100%;
+      padding:16px;
+      position:relative;
+    }
+    .screen {
+      background:#111;
+      border:4px solid #000;
+      border-radius:6px;
+      width:100%; height:75%;
+      overflow:hidden;
+      color:#ddd;
+      position:relative;
+    }
+    .menu, .music-list { list-style:none; padding:20px; height:100%; overflow:hidden; }
+    .menu li, .music-list li { font-size:20px; line-height:1.6; color:#888; }
+    .menu li.active, .music-list li.active { color:#fff; }
+    .now-playing { display:none; height:100%; padding:16px; color:#eee; position:relative; }
+    .cover { width:100%; height:120px; background-size:cover; background-position:center; border-radius:4px; }
+    .track-info { margin-top:12px; font-size:14px; }
+    .progress-bar { width:100%; height:4px; background:#555; margin-top:8px; position:relative; }
+    .progress { height:100%; background:#09f; width:0%; }
+    .controls { display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:18px; }
+    .controls button { background:none; border:none; color:#ddd; font-size:18px; }
+    .status-icons { position:absolute; bottom:4px; right:8px; font-size:12px; color:#888; }
+    .wheel { width:100%; height:25%; display:flex; justify-content:center; align-items:center; }
+    .outer-wheel { width:100px; height:100px; border-radius:50%; background:#222; position:relative; }
+    .click-hub { width:40px; height:40px; background:#000; border-radius:50%; position:absolute; top:30px; left:30px; cursor:pointer; }
+    .btn { position:absolute; width:20px; height:20px; opacity:0.7; cursor:pointer; }
+    .btn.back { top:18px; left:40px; }
+    .btn.play { bottom:18px; left:40px; }
+    .btn.up { left:18px; top:40px; }
+    .btn.down { right:18px; top:40px; }
+  </style>
+</head>
+<body>
+  <div class="zune-device">
+    <div class="screen">
+      <ul class="menu" id="menuView"></ul>
+      <ul class="music-list" id="musicView"></ul>
+      <div class="now-playing" id="nowPlaying">
+        <div class="cover" id="coverArt"></div>
+        <div class="track-info">
+          <div id="trackTitle">Track Title</div>
+          <div id="trackArtist">Artist – Album</div>
+        </div>
+        <div class="progress-bar"><div class="progress" id="progress"></div></div>
+        <div class="controls">
+          <button id="prevBtn">◄◄</button>
+          <button id="playPauseBtn">►║</button>
+          <button id="nextBtn">►►</button>
+        </div>
+        <div class="status-icons">🔋 ▮▮</div>
+      </div>
+    </div>
+    <div class="wheel">
+      <div class="outer-wheel">
+        <div class="btn up"></div>
+        <div class="btn down"></div>
+        <div class="btn back"></div>
+        <div class="btn play"></div>
+        <div class="click-hub"></div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="audio"></audio>
+  <script>
+    // Replace with your Jamendo client ID
+    const jamendoClientId = 'YOUR_JAMENDO_CLIENT_ID';
+    const menuItems = ["music","videos","pictures","social","radio","marketplace","settings"];
+    let playlist = [];
+    let selectedMenuIndex = 0;
+    let selectedMusicIndex = 0;
+
+    const menuView = document.getElementById('menuView');
+    const musicView = document.getElementById('musicView');
+    const nowPlaying = document.getElementById('nowPlaying');
+    const coverArt = document.getElementById('coverArt');
+    const trackTitle = document.getElementById('trackTitle');
+    const trackArtist = document.getElementById('trackArtist');
+    const progress = document.getElementById('progress');
+    const audio = document.getElementById('audio');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // Build static menu
+    menuItems.forEach(item => {
+      const li = document.createElement('li'); li.textContent = item;
+      menuView.appendChild(li);
+    });
+
+    function updateMenuHighlight() {
+      [...menuView.children].forEach((li, i) => li.classList.toggle('active', i === selectedMenuIndex));
+    }
+    function updateMusicHighlight() {
+      [...musicView.children].forEach((li, i) => li.classList.toggle('active', i === selectedMusicIndex));
+    }
+
+    function showMenu() {
+      menuView.style.display = 'block'; musicView.style.display = 'none'; nowPlaying.style.display = 'none';
+      updateMenuHighlight();
+    }
+    function showMusicList() {
+      menuView.style.display = 'none'; musicView.style.display = 'block'; nowPlaying.style.display = 'none';
+      selectedMusicIndex = 0; updateMusicHighlight();
+    }
+    function showNowPlaying(idx = selectedMusicIndex) {
+      menuView.style.display = 'none'; musicView.style.display = 'none'; nowPlaying.style.display = 'block';
+      loadTrack(idx);
+    }
+
+    function loadTrack(i) {
+      const t = playlist[i];
+      coverArt.style.backgroundImage = t.cover ? `url('${t.cover}')` : '';
+      trackTitle.textContent = t.title;
+      trackArtist.textContent = `${t.artist} – ${t.album}`;
+      audio.src = t.src; audio.currentTime = 0; progress.style.width = '0%';
+      audio.play(); playPauseBtn.textContent = '║';
+    }
+
+    // Fetch latest tracks from Jamendo
+    async function fetchJamendoTracks() {
+      const url = `https://api.jamendo.com/v3.0/tracks?client_id=${jamendoClientId}&format=json&limit=20&order=latest`;
+      try {
+        const resp = await fetch(url);
+        const data = await resp.json();
+        playlist = data.results.map(item => ({
+          title: item.name,
+          artist: item.artist_name,
+          album: item.album_name,
+          cover: item.album_image,
+          src: item.audio
+        }));
+        buildMusicList();
+      } catch (err) {
+        console.error('Jamendo fetch error', err);
+        alert('Failed to load Jamendo tracks. Check your client ID and network.');
+      }
+    }
+
+    function buildMusicList() {
+      musicView.innerHTML = '';
+      playlist.forEach((t, i) => {
+        const li = document.createElement('li'); li.textContent = t.title;
+        musicView.appendChild(li);
+      });
+      updateMusicHighlight();
+    }
+
+    // Wheel button handlers
+    document.querySelector('.btn.up').onclick = () => {
+      if (menuView.style.display === 'block') {
+        selectedMenuIndex = (selectedMenuIndex - 1 + menuItems.length) % menuItems.length;
+        updateMenuHighlight();
+      } else if (musicView.style.display === 'block') {
+        selectedMusicIndex = (selectedMusicIndex - 1 + playlist.length) % playlist.length;
+        updateMusicHighlight();
+      }
+    };
+    document.querySelector('.btn.down').onclick = () => {
+      if (menuView.style.display === 'block') {
+        selectedMenuIndex = (selectedMenuIndex + 1) % menuItems.length;
+        updateMenuHighlight();
+      } else if (musicView.style.display === 'block') {
+        selectedMusicIndex = (selectedMusicIndex + 1) % playlist.length;
+        updateMusicHighlight();
+      }
+    };
+    document.querySelector('.btn.back').onclick = () => {
+      // Left direction navigates backward in list or menu
+      if (menuView.style.display === 'block') {
+        selectedMenuIndex = (selectedMenuIndex - 1 + menuItems.length) % menuItems.length;
+        updateMenuHighlight();
+      } else if (musicView.style.display === 'block') {
+        selectedMusicIndex = (selectedMusicIndex - 1 + playlist.length) % playlist.length;
+        updateMusicHighlight();
+      } else if (nowPlaying.style.display === 'block') {
+        showMusicList();
+      }
+    };
+    document.querySelector('.btn.play').onclick = () => {
+      // Right direction navigates forward in list or menu
+      if (menuView.style.display === 'block') {
+        selectedMenuIndex = (selectedMenuIndex + 1) % menuItems.length;
+        updateMenuHighlight();
+      } else if (musicView.style.display === 'block') {
+        selectedMusicIndex = (selectedMusicIndex + 1) % playlist.length;
+        updateMusicHighlight();
+      }
+    };
+    document.querySelector('.click-hub').onclick = () => {
+      // Center selects
+      if (menuView.style.display === 'block' && menuItems[selectedMenuIndex] === 'music') {
+        fetchJamendoTracks().then(showMusicList);
+      } else if (musicView.style.display === 'block') {
+        showNowPlaying(selectedMusicIndex);
+      }
+    };
+
+    // Prev/Next and pause/play
+    prevBtn.onclick = () => { selectedMusicIndex = (selectedMusicIndex - 1 + playlist.length) % playlist.length; showNowPlaying(selectedMusicIndex); };
+    nextBtn.onclick = () => { selectedMusicIndex = (selectedMusicIndex + 1) % playlist.length; showNowPlaying(selectedMusicIndex); };
+    playPauseBtn.onclick = () => {
+      if (audio.paused) { audio.play(); playPauseBtn.textContent = '║'; }
+      else { audio.pause(); playPauseBtn.textContent = '►'; }
+    };
+    audio.ontimeupdate = () => { progress.style.width = ((audio.currentTime / audio.duration) * 100 || 0) + '%'; };
+
+    // Initialize
+    showMenu();
+  </script>
+</body>
+</html>

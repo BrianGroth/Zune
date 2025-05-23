@@ -5,223 +5,430 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Zune Web Player</title>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#333; margin:0; height:100vh; width:100vw; overflow:hidden; font-family:"Segoe UI", Tahoma, sans-serif; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+      margin: 0;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     .zune-device {
-      background:#6F4E37; /* Darker Zune brown */
-      border:8px solid #444;
-      border-radius:12px;
-      width:100%; height:100%;
-      padding:16px;
-      position:relative;
+      background: linear-gradient(145deg, #5a3e2b, #3e2a1e); /* Brown gradient */
+      border: 3px solid #6b4a35; /* Brown border */
+      border-radius: 20px;
+      width: 90%; /* Adjusted for mobile responsiveness */
+      max-width: 320px;
+      height: 90%; /* Adjusted for mobile responsiveness */
+      max-height: 480px;
+      padding: 20px;
+      position: relative;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
     }
+
     .screen {
-      background:#111;
-      border:4px solid #000;
-      border-radius:6px;
-      width:100%; height:75%;
-      overflow:hidden;
-      color:#ddd;
-      position:relative;
+      background: linear-gradient(145deg, #000, #1a1a1a);
+      border: 2px solid #333;
+      border-radius: 8px;
+      width: 100%;
+      height: 60%; /* Adjusted for mobile responsiveness */
+      overflow: hidden;
+      color: #fff;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
     }
-    .menu, .music-list { list-style:none; padding:20px; height:100%; overflow:hidden; }
-    .menu li, .music-list li { font-size:20px; line-height:1.6; color:#888; }
-    .menu li.active, .music-list li.active { color:#fff; }
-    .now-playing { display:none; height:100%; padding:16px; color:#eee; position:relative; }
-    .cover { width:100%; height:120px; background-size:cover; background-position:center; border-radius:4px; }
-    .track-info { margin-top:12px; font-size:14px; }
-    .progress-bar { width:100%; height:4px; background:#555; margin-top:8px; position:relative; }
-    .progress { height:100%; background:#09f; width:0%; }
-    .controls { display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:18px; }
-    .controls button { background:none; border:none; color:#ddd; font-size:18px; }
-    .status-icons { position:absolute; bottom:4px; right:8px; font-size:12px; color:#888; }
-    .wheel { width:100%; height:25%; display:flex; justify-content:center; align-items:center; }
-    .outer-wheel { width:100px; height:100px; border-radius:50%; background:#222; position:relative; }
-    .click-hub { width:40px; height:40px; background:#000; border-radius:50%; position:absolute; top:30px; left:30px; cursor:pointer; }
-    .btn { position:absolute; width:20px; height:20px; opacity:0.7; cursor:pointer; }
-    .btn.back { top:18px; left:40px; }
-    .btn.play { bottom:18px; left:40px; }
-    .btn.up { left:18px; top:40px; }
-    .btn.down { right:18px; top:40px; }
+
+    .zune-header {
+      background: linear-gradient(90deg, #ff6600, #ff3300);
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-weight: bold;
+      font-size: 14px;
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .content-area {
+      height: calc(100% - 40px);
+      position: relative;
+      background: #000;
+    }
+
+    .menu,
+    .music-list {
+      list-style: none;
+      padding: 16px 0;
+      height: 100%;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .menu::-webkit-scrollbar,
+    .music-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .menu::-webkit-scrollbar-track,
+    .music-list::-webkit-scrollbar-track {
+      background: #111;
+    }
+
+    .menu::-webkit-scrollbar-thumb,
+    .music-list::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 3px;
+    }
+
+    .menu li,
+    .music-list li {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #888;
+      padding: 8px 16px;
+      border-bottom: 1px solid #222;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .menu li:hover,
+    .music-list li:hover {
+      background: #222;
+    }
+
+    .menu li.active,
+    .music-list li.active {
+      color: #fff;
+      background: linear-gradient(90deg, #ff6600, #ff3300);
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .now-playing {
+      display: none;
+      height: 100%;
+      padding: 16px;
+      color: #fff;
+      position: relative;
+      background: linear-gradient(145deg, #111, #000);
+    }
+
+    .album-art-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .cover {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(45deg, #333, #555);
+      background-size: cover;
+      background-position: center;
+      border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      border: 2px solid #444;
+    }
+
+    .track-info {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .track-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .track-artist {
+      font-size: 12px;
+      color: #bbb;
+    }
+
+    .progress-container {
+      margin: 16px 0;
+    }
+
+    .time-display {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      position: relative;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6600, #ff3300);
+      width: 0%;
+      border-radius: 3px;
+      transition: width 0.1s ease;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-top: 12px;
+    }
+
+    .controls button {
+      background: linear-gradient(145deg, #333, #111);
+      border: 1px solid #555;
+      color: #fff;
+      font-size: 16px;
+      width: 36px;
+      height: 36px;
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .controls button:hover {
+      background: linear-gradient(145deg, #444, #222);
+      transform: translateY(-1px);
+    }
+
+    .controls button:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .wheel-container {
+      width: 100%;
+      height: 30%; /* Adjusted for mobile responsiveness */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .zune-wheel {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      position: relative;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.1);
+      border: 2px solid #444;
+    }
+
+    .wheel-button {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #333, #111);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .btn-up {
+      top: 8px;
+      left: 48px;
+    }
+
+    .btn-down {
+      bottom: 8px;
+      left: 48px;
+    }
+
+    .btn-left {
+      left: 8px;
+      top: 48px;
+    }
+
+    .btn-right {
+      right: 8px;
+      top: 48px;
+    }
+
+    .center-button {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(145deg, #a0522d, #8b4513); /* Brown center button */
+      border-radius: 50%;
+      position: absolute;
+      top: 36px;
+      left: 36px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 3px 12px rgba(255, 102, 0, 0.4);
+      border: 2px solid #8b4513;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: white;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <div class="zune-device">
     <div class="screen">
-      <ul class="menu" id="menuView"></ul>
-      <ul class="music-list" id="musicView"></ul>
-      <div class="now-playing" id="nowPlaying">
-        <div class="cover" id="coverArt"></div>
-        <div class="track-info">
-          <div id="trackTitle">Track Title</div>
-          <div id="trackArtist">Artist – Album</div>
+      <div class="zune-header">
+        <span id="headerTitle">Zune</span>
+      </div>
+      <div class="content-area">
+        <ul class="menu" id="menuView">
+          <li><span class="menu-icon">🎵</span>music</li>
+          <li><span class="menu-icon">▶</span>videos</li>
+          <li><span class="menu-icon">📷</span>pictures</li>
+          <li><span class="menu-icon">📻</span>radio</li>
+            <!-- <li><span class="menu-icon">🎵</span>marketplace</li>
+            <li><span class="menu-icon">⚙</span>settings</li> -->
+        </ul>
+        
+        <ul class="music-list" id="musicView"></ul>
+        
+        <div class="now-playing" id="nowPlaying">
+          <div class="album-art-container">
+            <div class="cover" id="coverArt"></div>
+          </div>
+          <div class="track-info">
+            <div class="track-title" id="trackTitle">Select a track</div>
+            <div class="track-artist" id="trackArtist">Artist – Album</div>
+          </div>
+          <div class="progress-container">
+            <div class="time-display">
+              <span id="currentTime">0:00</span>
+              <span id="totalTime">0:00</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress" id="progress"></div>
+            </div>
+          </div>
+          <div class="controls">
+            <button id="prevBtn">⏮</button>
+            <button id="playPauseBtn">▶</button>
+            <button id="nextBtn">⏭</button>
+          </div>
+          <div class="status-bar">
+            <span>🔋</span>
+            <span>▮▮▮</span>
+          </div>
         </div>
-        <div class="progress-bar"><div class="progress" id="progress"></div></div>
-        <div class="controls">
-          <button id="prevBtn">◄◄</button>
-          <button id="playPauseBtn">►║</button>
-          <button id="nextBtn">►►</button>
+        
+        <div class="loading" id="loadingView" style="display: none;">
+          Loading tracks...
         </div>
-        <div class="status-icons">🔋 ▮▮</div>
       </div>
     </div>
-    <div class="wheel">
-      <div class="outer-wheel">
-        <div class="btn up"></div>
-        <div class="btn down"></div>
-        <div class="btn back"></div>
-        <div class="btn play"></div>
-        <div class="click-hub"></div>
+    
+    <div class="wheel-container">
+      <div class="zune-wheel">
+        <div class="wheel-button btn-up">▲</div>
+        <div class="wheel-button btn-down">▼</div>
+        <div class="wheel-button btn-left">◀</div>
+        <div class="wheel-button btn-right">▶</div>
+        <div class="center-button">OK</div>
       </div>
     </div>
   </div>
 
   <audio id="audio"></audio>
+  
   <script>
-    // Replace with your Jamendo client ID
-    const jamendoClientId = 'YOUR_JAMENDO_CLIENT_ID';
-    const menuItems = ["music","videos","pictures","social","radio","marketplace","settings"];
-    let playlist = [];
-    let selectedMenuIndex = 0;
-    let selectedMusicIndex = 0;
+  // Initialize global variables
+  const elements = {
+    menuView: document.getElementById('menuView'),
+    musicView: document.getElementById('musicView'),
+    nowPlaying: document.getElementById('nowPlaying'),
+    coverArt: document.getElementById('coverArt'),
+    trackTitle: document.getElementById('trackTitle'),
+    trackArtist: document.getElementById('trackArtist'),
+    audio: document.getElementById('audio'),
+  };
 
-    const menuView = document.getElementById('menuView');
-    const musicView = document.getElementById('musicView');
-    const nowPlaying = document.getElementById('nowPlaying');
-    const coverArt = document.getElementById('coverArt');
-    const trackTitle = document.getElementById('trackTitle');
-    const trackArtist = document.getElementById('trackArtist');
-    const progress = document.getElementById('progress');
-    const audio = document.getElementById('audio');
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
+  let playlist = [];
+  let currentTrackIndex = 0;
 
-    // Build static menu
-    menuItems.forEach(item => {
-      const li = document.createElement('li'); li.textContent = item;
-      menuView.appendChild(li);
-    });
+  // Function to show a specific view
+  function showView(view) {
+    elements.menuView.style.display = view === 'menu' ? 'block' : 'none';
+    elements.musicView.style.display = view === 'music' ? 'block' : 'none';
+    elements.nowPlaying.style.display = view === 'player' ? 'block' : 'none';
+  }
 
-    function updateMenuHighlight() {
-      [...menuView.children].forEach((li, i) => li.classList.toggle('active', i === selectedMenuIndex));
+  // Fetch the music list from the JSON file
+  async function fetchMusicList() {
+    try {
+      const response = await fetch('music.json');
+      const musicFiles = await response.json();
+      buildMusicList(musicFiles);
+    } catch (error) {
+      console.error('Error fetching music list:', error);
     }
-    function updateMusicHighlight() {
-      [...musicView.children].forEach((li, i) => li.classList.toggle('active', i === selectedMusicIndex));
-    }
+  }
 
-    function showMenu() {
-      menuView.style.display = 'block'; musicView.style.display = 'none'; nowPlaying.style.display = 'none';
-      updateMenuHighlight();
-    }
-    function showMusicList() {
-      menuView.style.display = 'none'; musicView.style.display = 'block'; nowPlaying.style.display = 'none';
-      selectedMusicIndex = 0; updateMusicHighlight();
-    }
-    function showNowPlaying(idx = selectedMusicIndex) {
-      menuView.style.display = 'none'; musicView.style.display = 'none'; nowPlaying.style.display = 'block';
-      loadTrack(idx);
-    }
-
-    function loadTrack(i) {
-      const t = playlist[i];
-      coverArt.style.backgroundImage = t.cover ? `url('${t.cover}')` : '';
-      trackTitle.textContent = t.title;
-      trackArtist.textContent = `${t.artist} – ${t.album}`;
-      audio.src = t.src; audio.currentTime = 0; progress.style.width = '0%';
-      audio.play(); playPauseBtn.textContent = '║';
-    }
-
-    // Fetch latest tracks from Jamendo
-    async function fetchJamendoTracks() {
-      const url = `https://api.jamendo.com/v3.0/tracks?client_id=${jamendoClientId}&format=json&limit=20&order=latest`;
-      try {
-        const resp = await fetch(url);
-        const data = await resp.json();
-        playlist = data.results.map(item => ({
-          title: item.name,
-          artist: item.artist_name,
-          album: item.album_name,
-          cover: item.album_image,
-          src: item.audio
-        }));
-        buildMusicList();
-      } catch (err) {
-        console.error('Jamendo fetch error', err);
-        alert('Failed to load Jamendo tracks. Check your client ID and network.');
-      }
-    }
-
-    function buildMusicList() {
-      musicView.innerHTML = '';
-      playlist.forEach((t, i) => {
-        const li = document.createElement('li'); li.textContent = t.title;
-        musicView.appendChild(li);
+  // Build the music list dynamically
+  function buildMusicList(musicFiles) {
+    elements.musicView.innerHTML = ''; // Clear existing list
+    playlist = musicFiles; // Update the global playlist
+    musicFiles.forEach((track, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${track.title}</strong><br><small>${track.artist}</small>`;
+      li.addEventListener('click', () => {
+        loadTrack(i);
       });
-      updateMusicHighlight();
-    }
+      elements.musicView.appendChild(li);
+    });
+  }
 
-    // Wheel button handlers
-    document.querySelector('.btn.up').onclick = () => {
-      if (menuView.style.display === 'block') {
-        selectedMenuIndex = (selectedMenuIndex - 1 + menuItems.length) % menuItems.length;
-        updateMenuHighlight();
-      } else if (musicView.style.display === 'block') {
-        selectedMusicIndex = (selectedMusicIndex - 1 + playlist.length) % playlist.length;
-        updateMusicHighlight();
-      }
-    };
-    document.querySelector('.btn.down').onclick = () => {
-      if (menuView.style.display === 'block') {
-        selectedMenuIndex = (selectedMenuIndex + 1) % menuItems.length;
-        updateMenuHighlight();
-      } else if (musicView.style.display === 'block') {
-        selectedMusicIndex = (selectedMusicIndex + 1) % playlist.length;
-        updateMusicHighlight();
-      }
-    };
-    document.querySelector('.btn.back').onclick = () => {
-      // Left direction navigates backward in list or menu
-      if (menuView.style.display === 'block') {
-        selectedMenuIndex = (selectedMenuIndex - 1 + menuItems.length) % menuItems.length;
-        updateMenuHighlight();
-      } else if (musicView.style.display === 'block') {
-        selectedMusicIndex = (selectedMusicIndex - 1 + playlist.length) % playlist.length;
-        updateMusicHighlight();
-      } else if (nowPlaying.style.display === 'block') {
-        showMusicList();
-      }
-    };
-    document.querySelector('.btn.play').onclick = () => {
-      // Right direction navigates forward in list or menu
-      if (menuView.style.display === 'block') {
-        selectedMenuIndex = (selectedMenuIndex + 1) % menuItems.length;
-        updateMenuHighlight();
-      } else if (musicView.style.display === 'block') {
-        selectedMusicIndex = (selectedMusicIndex + 1) % playlist.length;
-        updateMusicHighlight();
-      }
-    };
-    document.querySelector('.click-hub').onclick = () => {
-      // Center selects
-      if (menuView.style.display === 'block' && menuItems[selectedMenuIndex] === 'music') {
-        fetchJamendoTracks().then(showMusicList);
-      } else if (musicView.style.display === 'block') {
-        showNowPlaying(selectedMusicIndex);
-      }
-    };
+  // Load and play a specific track
+  function loadTrack(index) {
+    if (index < 0 || index >= playlist.length) return;
 
-    // Prev/Next and pause/play
-    prevBtn.onclick = () => { selectedMusicIndex = (selectedMusicIndex - 1 + playlist.length) % playlist.length; showNowPlaying(selectedMusicIndex); };
-    nextBtn.onclick = () => { selectedMusicIndex = (selectedMusicIndex + 1) % playlist.length; showNowPlaying(selectedMusicIndex); };
-    playPauseBtn.onclick = () => {
-      if (audio.paused) { audio.play(); playPauseBtn.textContent = '║'; }
-      else { audio.pause(); playPauseBtn.textContent = '►'; }
-    };
-    audio.ontimeupdate = () => { progress.style.width = ((audio.currentTime / audio.duration) * 100 || 0) + '%'; };
+    currentTrackIndex = index;
+    const track = playlist[index];
 
-    // Initialize
-    showMenu();
-  </script>
+    elements.coverArt.style.backgroundImage = `url('${track.cover}')`;
+    elements.trackTitle.textContent = track.title;
+    elements.trackArtist.textContent = `${track.artist} – ${track.album}`;
+    elements.audio.src = track.src;
+    elements.audio.play();
+
+    showView('player');
+  }
+
+  // Add event listener for the "Music" menu item
+  document.querySelector('#menuView li:first-child').addEventListener('click', () => {
+    showView('music');
+  });
+
+  // Initialize the app
+  showView('menu'); // Start with the menu view
+  fetchMusicList(); // Fetch the music list
+</script>
 </body>
 </html>
