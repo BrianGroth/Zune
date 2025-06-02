@@ -1,530 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Zune Web Player</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      background: #000;
-      color: #fff;
-      font-family: "Segoe UI", Tahoma, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zune Device</title>
+    <style>
+        /* Updated styles for the requested Zune UI */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .zune-device {
-      background: #3e2a1e;
-      border: 3px solid #6b4a35;
-      border-radius: 20px;
-      width: 320px;
-      height: 480px;
-      padding: 20px;
-      position: relative;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
-    }
+        body {
+            background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
 
-    .screen {
-      background: #000;
-      border: none;
-      border-radius: 0;
-      width: 100%;
-      height: 60%;
-      overflow: hidden;
-      color: #fff;
-      position: relative;
-      box-shadow: none;
-    }
+        .zune-device {
+            width: 280px;
+            height: 480px;
+            background: linear-gradient(145deg, #8B4513, #A0522D, #CD853F);
+            border-radius: 25px;
+            box-shadow: 
+                0 15px 30px rgba(0, 0, 0, 0.4),
+                inset 0 2px 4px rgba(255, 255, 255, 0.1),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
 
-    .menu {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      height: 100%;
-      overflow-y: auto;
-      font-size: 28px;
-      line-height: 1.4;
-      color: #fff;
-      text-align: left;
-      padding-left: 20px;
-    }
+        .screen-area {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            right: 25px;
+            height: 280px;
+            background: #000;
+            border-radius: 8px;
+            box-shadow: 
+                inset 0 3px 6px rgba(0, 0, 0, 0.8),
+                0 1px 2px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
 
-    .menu li {
-      padding: 8px 0;
-      cursor: pointer;
-    }
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #111, #000);
+            color: white;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            font-size: 24px;
+            font-weight: 300;
+            line-height: 1.3;
+            position: relative;
+        }
 
-    .menu li.active {
-      font-weight: bold;
-    }
+        .menu-item {
+            padding: 8px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            padding-left: 8px;
+            margin: 2px 0;
+        }
 
-    .zune-header {
-      display: none;
-    }
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
 
-    .content-area {
-      height: calc(100% - 40px);
-      position: relative;
-      background: #000;
-    }
+        .menu-item.selected {
+            background: linear-gradient(90deg, #FF6B00, #FF8C00);
+            color: white;
+            font-weight: 400;
+        }
 
-    .music-list {
-      list-style: none;
-      padding: 16px 0;
-      height: 100%;
-      overflow-y: auto;
-      scrollbar-width: thin;
-    }
+        .controls {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-    .music-list::-webkit-scrollbar {
-      width: 6px;
-    }
+        .zune-pad {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+            box-shadow: 
+                inset 0 5px 10px rgba(0, 0, 0, 0.5),
+                inset 0 -5px 10px rgba(255, 255, 255, 0.05),
+                0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            position: relative;
+        }
 
-    .music-list::-webkit-scrollbar-track {
-      background: #111;
-    }
+        .center-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #4a4a4a, #2a2a2a);
+            box-shadow: 
+                0 3px 6px rgba(0, 0, 0, 0.4),
+                inset 0 1px 2px rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
 
-    .music-list::-webkit-scrollbar-thumb {
-      background: #555;
-      border-radius: 3px;
-    }
-
-    .music-list li {
-      font-size: 20px;
-      line-height: 2;
-      color: #fff;
-      padding: 8px 16px;
-      border-bottom: none;
-      cursor: pointer;
-    }
-
-    .music-list li:hover {
-      background: #222;
-    }
-
-    .music-list li.active {
-      color: #fff;
-      font-weight: bold;
-    }
-
-    .now-playing {
-      display: none;
-      height: 100%;
-      padding: 16px;
-      color: #fff;
-      position: relative;
-      background: linear-gradient(145deg, #111, #000);
-    }
-
-    .album-art-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 12px;
-    }
-
-    .cover {
-      width: 120px;
-      height: 120px;
-      background: linear-gradient(45deg, #333, #555);
-      background-size: cover;
-      background-position: center;
-      border-radius: 6px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-      border: 2px solid #444;
-    }
-
-    .track-info {
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
-    .track-title {
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 4px;
-      color: #fff;
-    }
-
-    .track-artist {
-      font-size: 12px;
-      color: #bbb;
-    }
-
-    .progress-container {
-      margin: 16px 0;
-    }
-
-    .time-display {
-      display: flex;
-      justify-content: space-between;
-      font-size: 10px;
-      color: #888;
-      margin-bottom: 4px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      background: #333;
-      border-radius: 3px;
-      position: relative;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    .progress {
-      height: 100%;
-      background: linear-gradient(90deg, #ff6600, #ff3300);
-      width: 0%;
-      border-radius: 3px;
-      transition: width 0.1s ease;
-    }
-
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .controls button {
-      background: #000;
-      border: none;
-      color: #fff;
-      font-size: 16px;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-
-    .controls button:hover {
-      background: #444;
-    }
-
-    .controls button:active {
-      background: #222;
-    }
-
-    .wheel-container {
-      width: 100%;
-      height: 30%; /* Adjusted for mobile responsiveness */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 10px;
-    }
-
-    .zune-wheel {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: #000;
-      position: relative;
-      margin: 0 auto;
-      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.6);
-    }
-
-    .wheel-button {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(145deg, #555, #222);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-    }
-
-    .btn-up {
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .btn-down {
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .btn-left {
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    .btn-right {
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    .center-button {
-      display: none;
-    }
-  </style>
+        .zune-logo {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+    </style>
 </head>
 <body>
-  <div class="zune-device">
-    <div class="screen">
-      <div class="content-area">
-        <ul class="menu" id="menuView">
-          <li><span class="menu-icon">🎵</span> music</li>
-          <li><span class="menu-icon">▶</span> videos</li>
-          <li><span class="menu-icon">📷</span> pictures</li>
-          <li><span class="menu-icon">📻</span> radio</li>
-            <!-- <li><span class="menu-icon">🎵</span>marketplace</li>
-            <li><span class="menu-icon">⚙</span>settings</li> -->
-        </ul>
-        
-        <ul class="music-list" id="musicView"></ul>
-        
-        <div class="now-playing" id="nowPlaying">
-          <div class="album-art-container">
-            <div class="cover" id="coverArt"></div>
-          </div>
-          <div class="track-info">
-            <div class="track-title" id="trackTitle">Select a track</div>
-            <div class="track-artist" id="trackArtist">Artist – Album</div>
-          </div>
-          <div class="progress-container">
-            <div class="time-display">
-              <span id="currentTime">0:00</span>
-              <span id="totalTime">0:00</span>
+    <div class="zune-device">
+        <div class="screen-area">
+            <div class="screen">
+                <div class="menu-screen active" id="main-menu">
+                    <div class="menu-item selected" data-menu="music">music</div>
+                    <div class="menu-item" data-menu="videos">videos</div>
+                    <div class="menu-item" data-menu="pictures">pictures</div>
+                    <div class="menu-item" data-menu="radio">radio</div>
+                </div>
             </div>
-            <div class="progress-bar">
-              <div class="progress" id="progress"></div>
+        </div>
+
+        <div class="controls">
+            <div class="zune-pad">
+                <div class="center-button" id="select-btn"></div>
             </div>
-          </div>
-          <div class="controls">
-            <button id="prevBtn">⏮</button>
-            <button id="playPauseBtn">▶</button>
-            <button id="nextBtn">⏭</button>
-          </div>
-          <div class="status-bar">
-            <span>🔋</span>
-            <span>▮▮▮</span>
-          </div>
         </div>
-        
-        <div class="loading" id="loadingView" style="display: none;">
-          Loading tracks...
-        </div>
-      </div>
+
+        <div class="zune-logo">ZUNE</div>
     </div>
-    
-    <div class="wheel-container">
-      <div class="zune-wheel">
-        <div class="wheel-button btn-up"></div>
-        <div class="wheel-button btn-down"></div>
-        <div class="wheel-button btn-left"></div>
-        <div class="wheel-button btn-right"></div>
-      </div>
-    </div>
-  </div>
 
-  <audio id="audio"></audio>
-  
-  <script>
-  // Initialize global variables
-  const elements = {
-    menuView: document.getElementById('menuView'),
-    musicView: document.getElementById('musicView'),
-    nowPlaying: document.getElementById('nowPlaying'),
-    coverArt: document.getElementById('coverArt'),
-    trackTitle: document.getElementById('trackTitle'),
-    trackArtist: document.getElementById('trackArtist'),
-    audio: document.getElementById('audio'),
-  };
+    <script>
+        // Updated JavaScript to integrate functionality
+        let currentMenuIndex = 0;
+        const menuItems = document.querySelectorAll('.menu-item');
 
-  let playlist = [];
-  let currentTrackIndex = 0;
-
-  // Function to show a specific view
-  function showView(view) {
-    elements.menuView.style.display = view === 'menu' ? 'block' : 'none';
-    elements.musicView.style.display = view === 'music' ? 'block' : 'none';
-    elements.nowPlaying.style.display = view === 'player' ? 'block' : 'none';
-
-    if (view === 'menu') {
-      resetMenuHighlight();
-    }
-  }
-
-  function resetMenuHighlight() {
-    const menuItems = elements.menuView.querySelectorAll('li');
-    menuItems.forEach((item) => {
-      item.classList.remove('active');
-    });
-    currentMenuIndex = 0;
-    updateMenuHighlight();
-  }
-
-  // Fetch the music list from the JSON file
-  async function fetchMusicList() {
-    try {
-      const response = await fetch('music.json');
-      const musicFiles = await response.json();
-      buildMusicList(musicFiles);
-    } catch (error) {
-      console.error('Error fetching music list:', error);
-    }
-  }
-
-  // Build the music list dynamically
-  function buildMusicList(musicFiles) {
-    elements.musicView.innerHTML = ''; // Clear existing list
-    playlist = musicFiles; // Update the global playlist
-    musicFiles.forEach((track, i) => {
-      const li = document.createElement('li');
-      li.innerHTML = `<strong>${track.title}</strong><br><small>${track.artist}</small>`;
-      li.addEventListener('click', () => {
-        loadTrack(i);
-      });
-      elements.musicView.appendChild(li);
-    });
-  }
-
-  // Load and play a specific track
-  function loadTrack(index) {
-    if (index < 0 || index >= playlist.length) return;
-
-    currentTrackIndex = index;
-    const track = playlist[index];
-
-    elements.coverArt.style.backgroundImage = `url('${track.cover}')`;
-    elements.trackTitle.textContent = track.title;
-    elements.trackArtist.textContent = `${track.artist} – ${track.album}`;
-    elements.audio.src = track.src;
-    elements.audio.play();
-
-    showView('player');
-  }
-
-  // Add event listener for the "Music" menu item
-  document.querySelector('#menuView li:first-child').addEventListener('click', () => {
-    showView('music');
-  });
-
-  // Add event listener for the "Radio" menu item
-  document.querySelector('#menuView li:nth-child(4)').addEventListener('click', () => {
-    elements.audio.src = 'https://onlineradiobox.com/us/sanfranciscos70shits/';
-    elements.audio.play();
-    elements.trackTitle.textContent = 'San Francisco 70s Hits';
-    elements.trackArtist.textContent = 'Online Radio';
-    elements.coverArt.style.backgroundImage = "url('https://via.placeholder.com/120x120?text=Radio')";
-    showView('player');
-  });
-
-  // Add event listener for the "Pictures" menu item
-  document.querySelector('#menuView li:nth-child(3)').addEventListener('click', () => {
-    fetchFolderItems('pictures', 'image');
-  });
-
-  // Add event listener for the "Videos" menu item
-  document.querySelector('#menuView li:nth-child(2)').addEventListener('click', () => {
-    fetchFolderItems('videos', 'video');
-  });
-
-  // Function to fetch items from a folder and display them
-  async function fetchFolderItems(folder, type) {
-    try {
-      const response = await fetch(`${folder}.json`);
-      const items = await response.json();
-      buildFolderView(items, type);
-    } catch (error) {
-      console.error(`Error fetching ${folder} items:`, error);
-    }
-  }
-
-  // Function to build the folder view dynamically
-  function buildFolderView(items, type) {
-    elements.musicView.innerHTML = ''; // Clear existing list
-    items.forEach((item) => {
-      const li = document.createElement('li');
-      li.innerHTML = `<strong>${item.name}</strong>`;
-      li.addEventListener('click', () => {
-        if (type === 'image') {
-          elements.coverArt.style.backgroundImage = `url('${item.src}')`;
-          elements.trackTitle.textContent = item.name;
-          elements.trackArtist.textContent = 'Picture';
-        } else if (type === 'video') {
-          elements.audio.src = item.src;
-          elements.audio.play();
-          elements.trackTitle.textContent = item.name;
-          elements.trackArtist.textContent = 'Video';
+        function updateSelection() {
+            menuItems.forEach((item, index) => {
+                item.classList.toggle('selected', index === currentMenuIndex);
+            });
         }
-        showView('player');
-      });
-      elements.musicView.appendChild(li);
-    });
-    showView('music');
-  }
 
-  // Add event listeners for Zune wheel buttons
-const wheelButtons = {
-  up: document.querySelector('.btn-up'),
-  down: document.querySelector('.btn-down'),
-  left: document.querySelector('.btn-left'),
-  right: document.querySelector('.btn-right'),
-};
+        function navigate(direction) {
+            if (direction === 'up') {
+                currentMenuIndex = Math.max(0, currentMenuIndex - 1);
+            } else if (direction === 'down') {
+                currentMenuIndex = Math.min(menuItems.length - 1, currentMenuIndex + 1);
+            }
+            updateSelection();
+        }
 
-let currentMenuIndex = 0;
+        function selectItem() {
+            const selectedItem = menuItems[currentMenuIndex].dataset.menu;
+            if (selectedItem === 'music') {
+                console.log('Play music');
+            } else if (selectedItem === 'videos') {
+                console.log('Play videos');
+            } else if (selectedItem === 'pictures') {
+                console.log('Show pictures');
+            } else if (selectedItem === 'radio') {
+                console.log('Play radio');
+            }
+        }
 
-function updateMenuHighlight() {
-  const menuItems = elements.menuView.querySelectorAll('li');
-  menuItems.forEach((item, index) => {
-    item.classList.toggle('active', index === currentMenuIndex);
-  });
-}
+        document.getElementById('select-btn').addEventListener('click', selectItem);
 
-wheelButtons.up.addEventListener('click', () => {
-  const menuItems = elements.menuView.querySelectorAll('li');
-  currentMenuIndex = (currentMenuIndex - 1 + menuItems.length) % menuItems.length;
-  updateMenuHighlight();
-});
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') navigate('up');
+            if (e.key === 'ArrowDown') navigate('down');
+            if (e.key === 'Enter') selectItem();
+        });
 
-wheelButtons.down.addEventListener('click', () => {
-  const menuItems = elements.menuView.querySelectorAll('li');
-  currentMenuIndex = (currentMenuIndex + 1) % menuItems.length;
-  updateMenuHighlight();
-});
-
-wheelButtons.left.addEventListener('click', () => {
-  showView('menu');
-});
-
-wheelButtons.right.addEventListener('click', () => {
-  const menuItems = elements.menuView.querySelectorAll('li');
-  menuItems[currentMenuIndex].click();
-});
-
-wheelButtons.center.addEventListener('click', () => {
-  const menuItems = elements.menuView.querySelectorAll('li');
-  menuItems[currentMenuIndex].click();
-});
-
-// Initialize menu highlight
-updateMenuHighlight();
-
-  // Initialize the app
-  showView('menu'); // Start with the menu view
-  fetchMusicList(); // Fetch the music list
-</script>
+        updateSelection();
+    </script>
 </body>
 </html>
