@@ -34,26 +34,41 @@
     }
 
     .screen {
-      background: linear-gradient(145deg, #000, #1a1a1a);
-      border: 2px solid #333;
-      border-radius: 8px;
+      background: #000;
+      border: none;
+      border-radius: 0;
       width: 100%;
-      height: 60%; /* Adjusted for mobile responsiveness */
+      height: 60%;
       overflow: hidden;
       color: #fff;
       position: relative;
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+      box-shadow: none;
+    }
+
+    .menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      overflow-y: auto;
+      font-size: 28px;
+      line-height: 1.4;
+      color: #fff;
+      text-align: left;
+      padding-left: 20px;
+    }
+
+    .menu li {
+      padding: 8px 0;
+      cursor: pointer;
+    }
+
+    .menu li.active {
+      font-weight: bold;
     }
 
     .zune-header {
-      background: #000;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      font-weight: bold;
-      font-size: 18px;
-      color: #fff;
+      display: none;
     }
 
     .content-area {
@@ -62,7 +77,6 @@
       background: #000;
     }
 
-    .menu,
     .music-list {
       list-style: none;
       padding: 16px 0;
@@ -71,23 +85,19 @@
       scrollbar-width: thin;
     }
 
-    .menu::-webkit-scrollbar,
     .music-list::-webkit-scrollbar {
       width: 6px;
     }
 
-    .menu::-webkit-scrollbar-track,
     .music-list::-webkit-scrollbar-track {
       background: #111;
     }
 
-    .menu::-webkit-scrollbar-thumb,
     .music-list::-webkit-scrollbar-thumb {
       background: #555;
       border-radius: 3px;
     }
 
-    .menu li,
     .music-list li {
       font-size: 20px;
       line-height: 2;
@@ -97,12 +107,10 @@
       cursor: pointer;
     }
 
-    .menu li:hover,
     .music-list li:hover {
       background: #222;
     }
 
-    .menu li.active,
     .music-list li.active {
       color: #fff;
       font-weight: bold;
@@ -223,9 +231,9 @@
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      background: linear-gradient(145deg, #333, #000);
+      background: #000;
       position: relative;
-      margin: 20px auto;
+      margin: 0 auto;
       box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.6);
     }
 
@@ -267,36 +275,13 @@
     }
 
     .center-button {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(145deg, #a0522d, #8b4513);
-      border-radius: 50%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      cursor: pointer;
-      box-shadow: 0 3px 12px rgba(255, 102, 0, 0.4);
-      border: 2px solid #8b4513;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      color: white;
-      font-weight: bold;
-    }
-
-    .center-button:active {
-      background: #8b4513;
+      display: none;
     }
   </style>
 </head>
 <body>
   <div class="zune-device">
     <div class="screen">
-      <div class="zune-header">
-        <span id="headerTitle">Zune</span>
-      </div>
       <div class="content-area">
         <ul class="menu" id="menuView">
           <li><span class="menu-icon">🎵</span> music</li>
@@ -349,7 +334,6 @@
         <div class="wheel-button btn-down"></div>
         <div class="wheel-button btn-left"></div>
         <div class="wheel-button btn-right"></div>
-        <div class="center-button"></div>
       </div>
     </div>
   </div>
@@ -485,7 +469,6 @@ const wheelButtons = {
   down: document.querySelector('.btn-down'),
   left: document.querySelector('.btn-left'),
   right: document.querySelector('.btn-right'),
-  center: document.querySelector('.center-button'),
 };
 
 let currentMenuIndex = 0;
