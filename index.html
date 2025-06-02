@@ -360,6 +360,19 @@
     elements.menuView.style.display = view === 'menu' ? 'block' : 'none';
     elements.musicView.style.display = view === 'music' ? 'block' : 'none';
     elements.nowPlaying.style.display = view === 'player' ? 'block' : 'none';
+
+    if (view === 'menu') {
+      resetMenuHighlight();
+    }
+  }
+
+  function resetMenuHighlight() {
+    const menuItems = elements.menuView.querySelectorAll('li');
+    menuItems.forEach((item) => {
+      item.classList.remove('active');
+    });
+    currentMenuIndex = 0;
+    updateMenuHighlight();
   }
 
   // Fetch the music list from the JSON file
