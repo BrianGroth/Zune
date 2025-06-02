@@ -347,11 +347,11 @@
     
     <div class="wheel-container">
       <div class="zune-wheel">
-        <div class="wheel-button btn-up">▲</div>
-        <div class="wheel-button btn-down">▼</div>
-        <div class="wheel-button btn-left">◀</div>
-        <div class="wheel-button btn-right">▶</div>
-        <div class="center-button">OK</div>
+        <div class="wheel-button btn-up"></div>
+        <div class="wheel-button btn-down"></div>
+        <div class="wheel-button btn-left"></div>
+        <div class="wheel-button btn-right"></div>
+        <div class="center-button"></div>
       </div>
     </div>
   </div>
@@ -425,6 +425,108 @@
   document.querySelector('#menuView li:first-child').addEventListener('click', () => {
     showView('music');
   });
+
+  // Add event listener for the "Radio" menu item
+  document.querySelector('#menuView li:nth-child(4)').addEventListener('click', () => {
+    elements.audio.src = 'https://onlineradiobox.com/us/sanfranciscos70shits/';
+    elements.audio.play();
+    elements.trackTitle.textContent = 'San Francisco 70s Hits';
+    elements.trackArtist.textContent = 'Online Radio';
+    elements.coverArt.style.backgroundImage = "url('https://via.placeholder.com/120x120?text=Radio')";
+    showView('player');
+  });
+
+  // Add event listener for the "Pictures" menu item
+  document.querySelector('#menuView li:nth-child(3)').addEventListener('click', () => {
+    fetchFolderItems('pictures', 'image');
+  });
+
+  // Add event listener for the "Videos" menu item
+  document.querySelector('#menuView li:nth-child(2)').addEventListener('click', () => {
+    fetchFolderItems('videos', 'video');
+  });
+
+  // Function to fetch items from a folder and display them
+  async function fetchFolderItems(folder, type) {
+    try {
+      const response = await fetch(`${folder}.json`);
+      const items = await response.json();
+      buildFolderView(items, type);
+    } catch (error) {
+      console.error(`Error fetching ${folder} items:`, error);
+    }
+  }
+
+  // Function to build the folder view dynamically
+  function buildFolderView(items, type) {
+    elements.musicView.innerHTML = ''; // Clear existing list
+    items.forEach((item) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${item.name}</strong>`;
+      li.addEventListener('click', () => {
+        if (type === 'image') {
+          elements.coverArt.style.backgroundImage = `url('${item.src}')`;
+          elements.trackTitle.textContent = item.name;
+          elements.trackArtist.textContent = 'Picture';
+        } else if (type === 'video') {
+          elements.audio.src = item.src;
+          elements.audio.play();
+          elements.trackTitle.textContent = item.name;
+          elements.trackArtist.textContent = 'Video';
+        }
+        showView('player');
+      });
+      elements.musicView.appendChild(li);
+    });
+    showView('music');
+  }
+
+  // Add event listeners for Zune wheel buttons
+const wheelButtons = {
+  up: document.querySelector('.btn-up'),
+  down: document.querySelector('.btn-down'),
+  left: document.querySelector('.btn-left'),
+  right: document.querySelector('.btn-right'),
+  center: document.querySelector('.center-button'),
+};
+
+let currentMenuIndex = 0;
+
+function updateMenuHighlight() {
+  const menuItems = elements.menuView.querySelectorAll('li');
+  menuItems.forEach((item, index) => {
+    item.classList.toggle('active', index === currentMenuIndex);
+  });
+}
+
+wheelButtons.up.addEventListener('click', () => {
+  const menuItems = elements.menuView.querySelectorAll('li');
+  currentMenuIndex = (currentMenuIndex - 1 + menuItems.length) % menuItems.length;
+  updateMenuHighlight();
+});
+
+wheelButtons.down.addEventListener('click', () => {
+  const menuItems = elements.menuView.querySelectorAll('li');
+  currentMenuIndex = (currentMenuIndex + 1) % menuItems.length;
+  updateMenuHighlight();
+});
+
+wheelButtons.left.addEventListener('click', () => {
+  showView('menu');
+});
+
+wheelButtons.right.addEventListener('click', () => {
+  const menuItems = elements.menuView.querySelectorAll('li');
+  menuItems[currentMenuIndex].click();
+});
+
+wheelButtons.center.addEventListener('click', () => {
+  const menuItems = elements.menuView.querySelectorAll('li');
+  menuItems[currentMenuIndex].click();
+});
+
+// Initialize menu highlight
+updateMenuHighlight();
 
   // Initialize the app
   showView('menu'); // Start with the menu view
