@@ -139,6 +139,40 @@
             text-align: center;
             margin-top: 10px;
         }
+
+        .content-area {
+            display: none;
+            position: absolute;
+            top: 320px;
+            left: 25px;
+            right: 25px;
+            height: calc(100% - 345px);
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .music-item {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .music-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .cover-art {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -164,6 +198,9 @@
 
         <div class="footer" id="footer"></div>
     </div>
+
+    <div class="content-area" id="musicView" style="display: none;"></div>
+    <div class="content-area" id="coverArt" style="display: none;"></div>
 
     <audio id="audio"></audio>
 
@@ -206,7 +243,7 @@
 
         function playRadio() {
             const audio = document.getElementById('audio');
-            audio.src = 'https://onlineradiobox.com/us/sanfranciscos70shits/';
+            audio.src = 'https://stream.radiorecord.ru:805/rr_320'; // Updated to a direct audio stream URL
             audio.play();
         }
 
