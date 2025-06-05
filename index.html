@@ -138,6 +138,10 @@
             color: rgba(255, 255, 255, 0.5);
             text-align: center;
             margin-top: 10px;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .content-area {
@@ -195,6 +199,7 @@
 
         <div class="zune-logo">ORIGINAL ZUNE</div>
 
+        <div class="footer" id="footer" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);"></div>
     </div>
 
     <div class="content-area" id="musicView" style="display: none;"></div>
@@ -387,6 +392,5 @@
 
         updateSelection();
     </script>
-    <div class="footer" id="footer"></div>
 </body>
 </html>
