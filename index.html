@@ -132,6 +132,13 @@
             font-weight: bold;
             letter-spacing: 2px;
         }
+
+        .footer {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -154,6 +161,8 @@
         </div>
 
         <div class="zune-logo">ZUNE</div>
+
+        <div class="footer" id="footer"></div>
     </div>
 
     <audio id="audio"></audio>
@@ -225,6 +234,55 @@
                 if (direction === 'right') console.log('Right pressed');
             });
         });
+
+        const wheelButtons = {
+            up: document.querySelector('.btn-up'),
+            down: document.querySelector('.btn-down'),
+            left: document.querySelector('.btn-left'),
+            right: document.querySelector('.btn-right'),
+        };
+
+        function updateMenuHighlight() {
+            menuItems.forEach((item, index) => {
+                item.classList.toggle('selected', index === currentMenuIndex);
+            });
+        }
+
+        wheelButtons.up.addEventListener('click', () => {
+            currentMenuIndex = Math.max(0, currentMenuIndex - 1);
+            updateMenuHighlight();
+        });
+
+        wheelButtons.down.addEventListener('click', () => {
+            currentMenuIndex = Math.min(menuItems.length - 1, currentMenuIndex + 1);
+            updateMenuHighlight();
+        });
+
+        wheelButtons.left.addEventListener('click', () => {
+            console.log('Left pressed');
+        });
+
+        wheelButtons.right.addEventListener('click', () => {
+            selectItem();
+        });
+
+        wheelButtons.center.addEventListener('click', () => {
+            selectItem();
+        });
+
+        // Function to update the footer with the last saved date and time
+        function updateFooter() {
+            const footer = document.getElementById('footer');
+            const lastSaved = new Date();
+            footer.textContent = `Last saved: ${lastSaved.toLocaleDateString()} ${lastSaved.toLocaleTimeString()}`;
+            footer.style.fontSize = '10px';
+            footer.style.color = 'rgba(255, 255, 255, 0.5)';
+            footer.style.textAlign = 'center';
+            footer.style.marginTop = '10px';
+        }
+
+        // Call the function to update the footer
+        updateFooter();
 
         updateSelection();
     </script>
