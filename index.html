@@ -210,6 +210,73 @@
             audio.play();
         }
 
+        async function fetchMusicList() {
+            try {
+                const response = await fetch('music.json');
+                const musicFiles = await response.json();
+                buildMusicList(musicFiles);
+            } catch (error) {
+                console.error('Error fetching music list:', error);
+            }
+        }
+
+        function buildMusicList(musicFiles) {
+            const musicView = document.getElementById('musicView');
+            musicView.innerHTML = ''; // Clear existing list
+            musicFiles.forEach((track) => {
+                const li = document.createElement('li');
+                li.textContent = track.title;
+                li.addEventListener('click', () => {
+                    playTrack(track);
+                });
+                musicView.appendChild(li);
+            });
+        }
+
+        async function fetchFolderItems(folder, type) {
+            try {
+                const response = await fetch(`${folder}.json`);
+                const items = await response.json();
+                buildFolderView(items, type);
+            } catch (error) {
+                console.error(`Error fetching ${folder} items:`, error);
+            }
+        }
+
+        function buildFolderView(items, type) {
+            const musicView = document.getElementById('musicView');
+            musicView.innerHTML = ''; // Clear existing list
+            items.forEach((item) => {
+                const li = document.createElement('li');
+                li.textContent = item.name;
+                li.addEventListener('click', () => {
+                    if (type === 'image') {
+                        displayImage(item);
+                    } else if (type === 'video') {
+                        playVideo(item);
+                    }
+                });
+                musicView.appendChild(li);
+            });
+        }
+
+        function playTrack(track) {
+            const audio = document.getElementById('audio');
+            audio.src = track.src;
+            audio.play();
+        }
+
+        function displayImage(image) {
+            const coverArt = document.getElementById('coverArt');
+            coverArt.style.backgroundImage = `url('${image.src}')`;
+        }
+
+        function playVideo(video) {
+            const audio = document.getElementById('audio');
+            audio.src = video.src;
+            audio.play();
+        }
+
         document.getElementById('select-btn').addEventListener('click', selectItem);
 
         document.addEventListener('keydown', (e) => {
