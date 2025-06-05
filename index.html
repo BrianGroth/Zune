@@ -141,12 +141,11 @@
         }
 
         .content-area {
-            display: none;
             position: absolute;
-            top: 320px;
-            left: 25px;
-            right: 25px;
-            height: calc(100% - 345px);
+            top: 50px; /* Adjusted to fit within the screen area */
+            left: 10px;
+            right: 10px;
+            height: calc(100% - 60px); /* Adjusted height */
             background: rgba(0, 0, 0, 0.8);
             border-radius: 8px;
             padding: 10px;
@@ -343,35 +342,34 @@
             down: document.querySelector('.btn-down'),
             left: document.querySelector('.btn-left'),
             right: document.querySelector('.btn-right'),
+            center: document.querySelector('.center-button')
         };
 
-        function updateMenuHighlight() {
-            menuItems.forEach((item, index) => {
-                item.classList.toggle('selected', index === currentMenuIndex);
+        if (wheelButtons.up && wheelButtons.down && wheelButtons.left && wheelButtons.right && wheelButtons.center) {
+            wheelButtons.up.addEventListener('click', () => {
+                currentMenuIndex = Math.max(0, currentMenuIndex - 1);
+                updateMenuHighlight();
             });
+
+            wheelButtons.down.addEventListener('click', () => {
+                currentMenuIndex = Math.min(menuItems.length - 1, currentMenuIndex + 1);
+                updateMenuHighlight();
+            });
+
+            wheelButtons.left.addEventListener('click', () => {
+                console.log('Left pressed');
+            });
+
+            wheelButtons.right.addEventListener('click', () => {
+                selectItem();
+            });
+
+            wheelButtons.center.addEventListener('click', () => {
+                selectItem();
+            });
+        } else {
+            console.error('Wheel buttons are not defined in the HTML structure.');
         }
-
-        wheelButtons.up.addEventListener('click', () => {
-            currentMenuIndex = Math.max(0, currentMenuIndex - 1);
-            updateMenuHighlight();
-        });
-
-        wheelButtons.down.addEventListener('click', () => {
-            currentMenuIndex = Math.min(menuItems.length - 1, currentMenuIndex + 1);
-            updateMenuHighlight();
-        });
-
-        wheelButtons.left.addEventListener('click', () => {
-            console.log('Left pressed');
-        });
-
-        wheelButtons.right.addEventListener('click', () => {
-            selectItem();
-        });
-
-        wheelButtons.center.addEventListener('click', () => {
-            selectItem();
-        });
 
         // Function to update the footer with the last saved date and time
         function updateFooter() {
@@ -389,7 +387,6 @@
 
         updateSelection();
     </script>
-<div class="footer" id="footer"></div>
-
+    <div class="footer" id="footer"></div>
 </body>
 </html>
