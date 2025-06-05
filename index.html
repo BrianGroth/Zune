@@ -97,7 +97,7 @@
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+            background: linear-gradient(145deg, #2c2c2c, #1a1a2a);
             box-shadow: 
                 inset 0 5px 10px rgba(0, 0, 0, 0.5),
                 inset 0 -5px 10px rgba(255, 255, 255, 0.05),
@@ -156,6 +156,8 @@
         <div class="zune-logo">ZUNE</div>
     </div>
 
+    <audio id="audio"></audio>
+
     <script>
         // Updated JavaScript to integrate functionality
         let currentMenuIndex = 0;
@@ -179,14 +181,24 @@
         function selectItem() {
             const selectedItem = menuItems[currentMenuIndex].dataset.menu;
             if (selectedItem === 'music') {
-                console.log('Play music');
+                fetchMusicList();
+                console.log('Music selected');
             } else if (selectedItem === 'videos') {
-                console.log('Play videos');
+                fetchFolderItems('videos', 'video');
+                console.log('Videos selected');
             } else if (selectedItem === 'pictures') {
-                console.log('Show pictures');
+                fetchFolderItems('pictures', 'image');
+                console.log('Pictures selected');
             } else if (selectedItem === 'radio') {
-                console.log('Play radio');
+                playRadio();
+                console.log('Radio selected');
             }
+        }
+
+        function playRadio() {
+            const audio = document.getElementById('audio');
+            audio.src = 'https://onlineradiobox.com/us/sanfranciscos70shits/';
+            audio.play();
         }
 
         document.getElementById('select-btn').addEventListener('click', selectItem);
@@ -195,6 +207,23 @@
             if (e.key === 'ArrowUp') navigate('up');
             if (e.key === 'ArrowDown') navigate('down');
             if (e.key === 'Enter') selectItem();
+        });
+
+        document.querySelectorAll('.menu-item').forEach((item, index) => {
+            item.addEventListener('click', () => {
+                currentMenuIndex = index;
+                selectItem();
+            });
+        });
+
+        document.querySelectorAll('.d-pad-area').forEach(area => {
+            area.addEventListener('click', (e) => {
+                const direction = area.dataset.direction;
+                if (direction === 'up') navigate('up');
+                if (direction === 'down') navigate('down');
+                if (direction === 'left') console.log('Left pressed');
+                if (direction === 'right') console.log('Right pressed');
+            });
         });
 
         updateSelection();
