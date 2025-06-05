@@ -231,40 +231,18 @@
 
                 <!-- Music View -->
                 <div class="content-view" id="music-view">
-                    <div class="back-button" id="back-to-main">← back</div>
-                    <div class="content-item" data-track="track1">Song 1 - Artist A</div>
-                    <div class="content-item" data-track="track2">Song 2 - Artist B</div>
-                    <div class="content-item" data-track="track3">Song 3 - Artist C</div>
-                    <div class="content-item" data-track="track4">Song 4 - Artist D</div>
-                    <div class="content-item" data-track="track5">Song 5 - Artist E</div>
                 </div>
 
                 <!-- Videos View -->
                 <div class="content-view" id="videos-view">
-                    <div class="back-button" id="back-to-main-videos">← back</div>
-                    <div class="content-item" data-video="video1">Music Video 1</div>
-                    <div class="content-item" data-video="video2">Music Video 2</div>
-                    <div class="content-item" data-video="video3">Music Video 3</div>
-                    <div class="content-item" data-video="video4">Concert Recording</div>
                 </div>
 
                 <!-- Pictures View -->
                 <div class="content-view" id="pictures-view">
-                    <div class="back-button" id="back-to-main-pictures">← back</div>
-                    <div class="content-item" data-picture="pic1">Album Art 1</div>
-                    <div class="content-item" data-picture="pic2">Album Art 2</div>
-                    <div class="content-item" data-picture="pic3">Band Photo 1</div>
-                    <div class="content-item" data-picture="pic4">Band Photo 2</div>
-                    <div class="content-item" data-picture="pic5">Concert Photo</div>
                 </div>
 
                 <!-- Radio View -->
                 <div class="content-view" id="radio-view">
-                    <div class="back-button" id="back-to-main-radio">← back</div>
-                    <div class="content-item" data-station="station1">Rock Station</div>
-                    <div class="content-item" data-station="station2">Pop Station</div>
-                    <div class="content-item" data-station="station3">Jazz Station</div>
-                    <div class="content-item" data-station="station4">Classical Station</div>
                 </div>
 
                 <div class="now-playing" id="now-playing"></div>
@@ -404,6 +382,39 @@
                 nowPlaying.textContent = `📻 ${item.textContent}`;
             }
         }
+
+        function populateSubMenu(viewName, data) {
+            const viewElement = views[viewName];
+            viewElement.innerHTML = '';
+
+            data.forEach(item => {
+                const contentItem = document.createElement('div');
+                contentItem.classList.add('content-item');
+
+                if (viewName === 'music') {
+                    contentItem.dataset.track = item.src;
+                    contentItem.textContent = `${item.title} - ${item.artist}`;
+                } else if (viewName === 'videos') {
+                    contentItem.dataset.video = item.src;
+                    contentItem.textContent = item.name;
+                } else if (viewName === 'pictures') {
+                    contentItem.dataset.picture = item.src;
+                    contentItem.textContent = item.name;
+                }
+
+                viewElement.appendChild(contentItem);
+            });
+
+            const backButton = document.createElement('div');
+            backButton.classList.add('back-button');
+            backButton.textContent = 'Back';
+            viewElement.appendChild(backButton);
+        }
+
+        // Load JSON data and populate submenus
+        fetch('music.json').then(response => response.json()).then(data => populateSubMenu('music', data));
+        fetch('videos.json').then(response => response.json()).then(data => populateSubMenu('videos', data));
+        fetch('pictures.json').then(response => response.json()).then(data => populateSubMenu('pictures', data));
 
         // Event listeners for navigation buttons
         document.getElementById('nav-up').addEventListener('click', () => navigate('up'));
