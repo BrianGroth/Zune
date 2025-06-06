@@ -355,45 +355,19 @@
             const station = item.dataset.station;
             const nowPlaying = document.getElementById('now-playing');
             const audio = document.getElementById('audio');
-            const screenArea = document.querySelector('.screen-area');
 
+            // Just update the now playing text and play the media, don't replace the screen
             if (track) {
                 audio.src = track;
                 audio.play().catch(e => console.log('Audio play failed:', e));
                 nowPlaying.textContent = `♪ ${item.textContent}`;
-
-                const albumArt = document.createElement('img');
-                albumArt.src = 'Music/ABBA Greatest Hits/AlbumArt.png'; // Assuming album art is in the same folder
-                albumArt.style.width = '100%';
-                albumArt.style.height = '100%';
-                albumArt.style.objectFit = 'cover';
-
-                screenArea.innerHTML = '';
-                screenArea.appendChild(albumArt);
             } else if (video) {
                 nowPlaying.textContent = `📺 ${item.textContent}`;
-
-                const videoElement = document.createElement('video');
-                videoElement.src = video;
-                videoElement.controls = true;
-                videoElement.style.width = '100%';
-                videoElement.style.height = '100%';
-
-                screenArea.innerHTML = '';
-                screenArea.appendChild(videoElement);
-                videoElement.play().catch(e => console.log('Video play failed:', e));
-            } else if (picture || station) {
-                const imageSrc = picture || station;
-                nowPlaying.textContent = picture ? `🖼️ Viewing ${item.textContent}` : `📻 ${item.textContent}`;
-
-                const imageElement = document.createElement('img');
-                imageElement.src = imageSrc;
-                imageElement.style.width = '100%';
-                imageElement.style.height = '100%';
-                imageElement.style.objectFit = 'cover';
-
-                screenArea.innerHTML = '';
-                screenArea.appendChild(imageElement);
+                // For demo purposes, just show in now-playing since we can't play video in this context
+            } else if (picture) {
+                nowPlaying.textContent = `🖼️ Viewing ${item.textContent}`;
+            } else if (station) {
+                nowPlaying.textContent = `📻 ${item.textContent}`;
             }
         }
 
