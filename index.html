@@ -363,6 +363,8 @@
         // Helper to track the last submenu viewed
         let lastSubmenu = null;
         let isViewingContent = false;
+        const screenArea = document.querySelector('.screen-area');
+        const screenDiv = document.querySelector('.screen');
 
         function handleContentSelection(item) {
             const track = item.dataset.track;
@@ -371,16 +373,17 @@
             const station = item.dataset.station;
             const nowPlaying = document.getElementById('now-playing');
             const audio = document.getElementById('audio');
-            const screenArea = document.querySelector('.screen-area');
 
             // Track which submenu we're in for back navigation
             lastSubmenu = currentView;
             isViewingContent = true;
 
-            // No back button in the UI; navigation is only via nav-left or keyboard
-
             // Hide all views
             Object.values(views).forEach(view => view.classList.remove('active'));
+            // Remove the .screen div so only content is shown
+            if (screenDiv.parentNode === screenArea) {
+                screenArea.removeChild(screenDiv);
+            }
 
             if (track) {
                 audio.src = track;
@@ -539,6 +542,8 @@
         document.getElementById('nav-left').addEventListener('click', () => {
             if (isViewingContent) {
                 isViewingContent = false;
+                screenArea.innerHTML = '';
+                screenArea.appendChild(screenDiv);
                 showView(lastSubmenu || 'main');
             } else if (currentView !== 'main') {
                 showView('main');
@@ -563,6 +568,8 @@
             if ((e.key === 'ArrowLeft' || e.key === 'Escape')) {
                 if (isViewingContent) {
                     isViewingContent = false;
+                    screenArea.innerHTML = '';
+                    screenArea.appendChild(screenDiv);
                     showView(lastSubmenu || 'main');
                 } else if (currentView !== 'main') {
                     showView('main');
