@@ -31,21 +31,6 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
     }
 
-        /*
-        .zune-device {
-            width: 280px;
-            height: 480px;
-            background: linear-gradient(145deg, #8B4513, #A0522D, #CD853F);
-            border-radius: 25px;
-            box-shadow: 
-            0 15px 30px rgba(0, 0, 0, 0.4),
-            inset 0 2px 4px rgba(255, 255, 255, 0.1),
-            inset 0 -2px 4px rgba(0, 0, 0, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        */
-
         .screen-area {
             position: absolute;
             top: 25px;
@@ -290,6 +275,60 @@
             radio: document.getElementById('radio-view')
         };
 
+        // Helper to track the last submenu viewed
+        let lastSubmenu = null;
+        let isViewingContent = false;
+        const screenArea = document.querySelector('.screen-area');
+        const screenDiv = document.querySelector('.screen');
+
+        // Added missing parseJSON function
+        function parseJSON(text) {
+            try {
+                return JSON.parse(text);
+            } catch (error) {
+                console.error('JSON parse error:', error);
+                return null;
+            }
+        }
+
+        // Added missing populateSubMenu function
+        function populateSubMenu(category, data) {
+            const viewElement = views[category];
+            if (!viewElement || !data) return;
+
+            // Clear existing content
+            viewElement.innerHTML = '';
+
+            // Add back button
+            const backButton = document.createElement('div');
+            backButton.className = 'back-button';
+            backButton.textContent = '← Back';
+            backButton.addEventListener('click', () => showView('main'));
+            viewElement.appendChild(backButton);
+
+            // Add content items
+            data.forEach((item) => {
+                const contentItem = document.createElement('div');
+                contentItem.className = 'content-item';
+                
+                if (category === 'music') {
+                    contentItem.textContent = `${item.title} - ${item.artist}`;
+                    contentItem.dataset.track = item.src;
+                } else if (category === 'videos') {
+                    contentItem.textContent = item.name;
+                    contentItem.dataset.video = item.src;
+                } else if (category === 'pictures') {
+                    contentItem.textContent = item.name;
+                    contentItem.dataset.picture = item.src;
+                } else if (category === 'radio') {
+                    contentItem.textContent = item.name;
+                    contentItem.dataset.station = item.src;
+                }
+                
+                viewElement.appendChild(contentItem);
+            });
+        }
+
         function updateSelection() {
             if (currentView === 'main') {
                 mainMenuItems.forEach((item, index) => {
@@ -359,12 +398,6 @@
                 updateSelection();
             }
         }
-
-        // Helper to track the last submenu viewed
-        let lastSubmenu = null;
-        let isViewingContent = false;
-        const screenArea = document.querySelector('.screen-area');
-        const screenDiv = document.querySelector('.screen');
 
         function handleContentSelection(item) {
             const track = item.dataset.track;
