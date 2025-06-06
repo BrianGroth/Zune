@@ -259,7 +259,7 @@
             </div>
         </div>
 
-        <div class="zune-logo">THE ORIGINAL ZUNE</div>
+        <div class="zune-logo">TORIGINAL ZUNE</div>
     </div>
 
     <audio id="audio"></audio>
@@ -392,21 +392,18 @@
                 screenArea.innerHTML = '';
                 screenArea.appendChild(videoElement);
                 videoElement.play().catch(e => console.log('Video play failed:', e));
-            } else if (picture) {
-                nowPlaying.textContent = `🖼️ Viewing ${item.textContent}`;
+            } else if (picture || station) {
+                const imageSrc = picture || station;
+                nowPlaying.textContent = picture ? `🖼️ Viewing ${item.textContent}` : `📻 ${item.textContent}`;
 
                 const imageElement = document.createElement('img');
-                imageElement.src = picture;
+                imageElement.src = imageSrc;
                 imageElement.style.width = '100%';
                 imageElement.style.height = '100%';
                 imageElement.style.objectFit = 'cover';
 
                 screenArea.innerHTML = '';
                 screenArea.appendChild(imageElement);
-            } else if (station) {
-                audio.src = station;
-                audio.play().catch(e => console.log('Radio play failed:', e));
-                nowPlaying.textContent = `📻 ${item.textContent}`;
             }
         }
 
