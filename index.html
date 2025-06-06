@@ -447,9 +447,7 @@
         document.getElementById('nav-up').addEventListener('click', () => navigate('up'));
         document.getElementById('nav-down').addEventListener('click', () => navigate('down'));
         document.getElementById('nav-left').addEventListener('click', () => {
-            if (currentView !== 'main') {
-                showView('main');
-            }
+            showView('main');
         });
         document.getElementById('nav-right').addEventListener('click', selectItem);
         document.getElementById('select-btn').addEventListener('click', selectItem);
