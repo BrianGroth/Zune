@@ -179,36 +179,9 @@
             background: #222;
         }
 
-        .nav-button::after {
-            content: '';
-            display: block;
-            width: 0;
-            height: 0;
-            margin: auto;
-        }
-        .nav-up::after {
-            border-left: 7px solid transparent;
-            border-right: 7px solid transparent;
-            border-bottom: 10px solid #fff;
-            margin-top: 5px;
-        }
-        .nav-down::after {
-            border-left: 7px solid transparent;
-            border-right: 7px solid transparent;
-            border-top: 10px solid #fff;
-            margin-top: 8px;
-        }
-        .nav-left::after {
-            border-top: 7px solid transparent;
-            border-bottom: 7px solid transparent;
-            border-right: 10px solid #fff;
-            margin-left: 5px;
-        }
-        .nav-right::after {
-            border-top: 7px solid transparent;
-            border-bottom: 7px solid transparent;
-            border-left: 10px solid #fff;
-            margin-left: 8px;
+        /* Remove all nav button arrows: no ::after content for nav buttons */
+        .nav-up::after, .nav-down::after, .nav-left::after, .nav-right::after {
+            content: none;
         }
 
         .center-button {
