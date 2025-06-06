@@ -278,19 +278,6 @@
             radio: document.getElementById('radio-view')
         };
 
-        // Sample audio data
-        const audioData = {
-            track1: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
-            track2: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
-            track3: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
-            track4: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
-            track5: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
-            station1: 'https://stream.radiorecord.ru:805/rr_320',
-            station2: 'https://stream.radiorecord.ru:805/rr_320',
-            station3: 'https://stream.radiorecord.ru:805/rr_320',
-            station4: 'https://stream.radiorecord.ru:805/rr_320'
-        };
-
         function updateSelection() {
             if (currentView === 'main') {
                 mainMenuItems.forEach((item, index) => {
@@ -343,7 +330,15 @@
 
         function showView(viewName) {
             // Hide all views
-            Object.values(views).forEach(view => view.classList.remove('active'));
+            Object.values(views).forEach(view => {
+                view.classList.remove('active');
+                if (view.classList.contains('menu-screen')) {
+                    view.classList.remove('active');
+                }
+                if (view.classList.contains('content-view')) {
+                    view.classList.remove('active');
+                }
+            });
             
             // Show selected view
             views[viewName].classList.add('active');
@@ -409,9 +404,9 @@
 
         function populateSubMenu(viewName, data) {
             const viewElement = views[viewName];
-            viewElement.innerHTML = '';
+            viewElement.innerHTML = ''; // Clear previous content
 
-            data.forEach((item, index) => {
+            data.forEach((item) => {
                 const contentItem = document.createElement('div');
                 contentItem.classList.add('content-item');
 
@@ -429,25 +424,97 @@
                     contentItem.textContent = item.name;
                 }
 
+                contentItem.addEventListener('click', () => handleContentSelection(contentItem));
                 viewElement.appendChild(contentItem);
-
-                // Automatically select the first item for radio
-                if (viewName === 'radio' && index === 0) {
-                    handleContentSelection(contentItem);
-                }
             });
 
             const backButton = document.createElement('div');
             backButton.classList.add('back-button');
             backButton.textContent = 'Back';
+            backButton.addEventListener('click', () => showView('main'));
             viewElement.appendChild(backButton);
         }
 
-        // Load JSON data and populate submenus
-        fetch('music.json').then(response => response.json()).then(data => populateSubMenu('music', data));
-        fetch('videos.json').then(response => response.json()).then(data => populateSubMenu('videos', data));
-        fetch('pictures.json').then(response => response.json()).then(data => populateSubMenu('pictures', data));
-        fetch('radio.json').then(response => response.json()).then(data => populateSubMenu('radio', data));
+        // Helper function to remove JSON comments and parse
+        function parseJSON(text) {
+            // Remove single line comments
+            text = text.replace(/\/\/.*$/gm, '');
+            // Try to parse the JSON
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('JSON parse error:', e);
+                return null;
+            }
+        }
+
+        // Load JSON data and populate submenus with error handling
+        fetch('music.json')
+            .then(response => {
+                if (!response.ok) {
+                    console.error('HTTP Error Response:', response.status);
+                    throw new Error('Failed to fetch music data');
+                }
+                return response.text();
+            })
+            .then(text => {
+                const data = parseJSON(text);
+                console.log('Music data loaded:', data);
+                if (data && data.length > 0) {
+                    populateSubMenu('music', data);
+                } else {
+                    console.error('Music data is empty or invalid');
+                }
+            })
+            .catch(error => console.error('Error loading music:', error));
+
+        fetch('videos.json')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch videos data');
+                return response.text();
+            })
+            .then(text => {
+                const data = parseJSON(text);
+                console.log('Videos data loaded:', data);
+                if (data && data.length > 0) {
+                    populateSubMenu('videos', data);
+                } else {
+                    console.error('Videos data is empty or invalid');
+                }
+            })
+            .catch(error => console.error('Error loading videos:', error));
+
+        fetch('pictures.json')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch pictures data');
+                return response.text();
+            })
+            .then(text => {
+                const data = parseJSON(text);
+                console.log('Pictures data loaded:', data);
+                if (data && data.length > 0) {
+                    populateSubMenu('pictures', data);
+                } else {
+                    console.error('Pictures data is empty or invalid');
+                }
+            })
+            .catch(error => console.error('Error loading pictures:', error));
+
+        fetch('radio.json')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch radio data');
+                return response.text();
+            })
+            .then(text => {
+                const data = parseJSON(text);
+                console.log('Radio data loaded:', data);
+                if (data && data.length > 0) {
+                    populateSubMenu('radio', data);
+                } else {
+                    console.error('Radio data is empty or invalid');
+                }
+            })
+            .catch(error => console.error('Error loading radio:', error));
 
         // Initialize
         showView('main'); // Ensure the main menu is the default view
@@ -496,7 +563,7 @@
             if (e.key === 'Escape' && currentView !== 'main') showView('main');
         });
 
-        // Initialize
+        // Ensure the main menu is the first view to load
         showView('main');
         updateSelection();
     </script>
