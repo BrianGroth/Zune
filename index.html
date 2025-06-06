@@ -362,6 +362,7 @@
 
         // Helper to track the last submenu viewed
         let lastSubmenu = null;
+        let isViewingContent = false;
 
         function handleContentSelection(item) {
             const track = item.dataset.track;
@@ -374,8 +375,12 @@
 
             // Track which submenu we're in for back navigation
             lastSubmenu = currentView;
+            isViewingContent = true;
 
             // No back button in the UI; navigation is only via nav-left or keyboard
+
+            // Hide all views
+            Object.values(views).forEach(view => view.classList.remove('active'));
 
             if (track) {
                 audio.src = track;
@@ -532,11 +537,9 @@
         document.getElementById('nav-up').addEventListener('click', () => navigate('up'));
         document.getElementById('nav-down').addEventListener('click', () => navigate('down'));
         document.getElementById('nav-left').addEventListener('click', () => {
-            const screenArea = document.querySelector('.screen-area');
-            // If viewing/playing an item (screenArea is not empty and not just showing the menu)
-            if (screenArea.innerHTML.trim() !== '' && !screenArea.querySelector('.screen')) {
-                screenArea.innerHTML = '';
-                // Stay in the current submenu
+            if (isViewingContent) {
+                isViewingContent = false;
+                showView(lastSubmenu || 'main');
             } else if (currentView !== 'main') {
                 showView('main');
             }
@@ -558,9 +561,9 @@
             if (e.key === 'ArrowUp') navigate('up');
             if (e.key === 'ArrowDown') navigate('down');
             if ((e.key === 'ArrowLeft' || e.key === 'Escape')) {
-                const screenArea = document.querySelector('.screen-area');
-                if (screenArea.innerHTML.trim() !== '' && !screenArea.querySelector('.screen')) {
-                    screenArea.innerHTML = '';
+                if (isViewingContent) {
+                    isViewingContent = false;
+                    showView(lastSubmenu || 'main');
                 } else if (currentView !== 'main') {
                     showView('main');
                 }
