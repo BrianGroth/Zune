@@ -369,21 +369,7 @@
             const audio = document.getElementById('audio');
             const screenArea = document.querySelector('.screen-area');
 
-            // Helper to add a back button to the screen area
-            function addScreenBackButton(submenu) {
-                const backBtn = document.createElement('div');
-                backBtn.className = 'back-button';
-                backBtn.textContent = 'Back';
-                backBtn.style.position = 'absolute';
-                backBtn.style.top = '10px';
-                backBtn.style.left = '10px';
-                backBtn.style.zIndex = '10';
-                backBtn.addEventListener('click', function() {
-                    showView(submenu);
-                    screenArea.innerHTML = '';
-                });
-                screenArea.appendChild(backBtn);
-            }
+            // No back button in the UI; navigation is only via nav-left or keyboard
 
             if (track) {
                 audio.src = track;
@@ -396,7 +382,6 @@
                 albumArt.style.height = '100%';
                 albumArt.style.objectFit = 'cover';
                 screenArea.appendChild(albumArt);
-                addScreenBackButton('music');
             } else if (video) {
                 nowPlaying.textContent = `📺 ${item.textContent}`;
                 screenArea.innerHTML = '';
@@ -407,7 +392,6 @@
                 videoElement.style.height = '100%';
                 screenArea.appendChild(videoElement);
                 videoElement.play().catch(e => console.log('Video play failed:', e));
-                addScreenBackButton('videos');
             } else if (picture) {
                 nowPlaying.textContent = `🖼️ Viewing ${item.textContent}`;
                 screenArea.innerHTML = '';
@@ -417,7 +401,6 @@
                 imageElement.style.height = '100%';
                 imageElement.style.objectFit = 'cover';
                 screenArea.appendChild(imageElement);
-                addScreenBackButton('pictures');
             } else if (station) {
                 nowPlaying.textContent = `📻 ${item.textContent}`;
                 screenArea.innerHTML = '';
@@ -438,18 +421,15 @@
                     radioImg.style.objectFit = 'cover';
                     screenArea.appendChild(radioImg);
                 }
-                addScreenBackButton('radio');
             }
         }
 
         function populateSubMenu(viewName, data) {
             const viewElement = views[viewName];
-            viewElement.innerHTML = ''; // Clear previous content
-
+            viewElement.innerHTML = '';
             data.forEach((item) => {
                 const contentItem = document.createElement('div');
                 contentItem.classList.add('content-item');
-
                 if (viewName === 'music') {
                     contentItem.dataset.track = item.src;
                     contentItem.textContent = `${item.title} - ${item.artist}`;
@@ -463,10 +443,10 @@
                     contentItem.dataset.station = item.src;
                     contentItem.textContent = item.name;
                 }
-
                 contentItem.addEventListener('click', () => handleContentSelection(contentItem));
                 viewElement.appendChild(contentItem);
             });
+            // Do NOT add a back button here
         }
 
         // Helper function to remove JSON comments and parse
@@ -580,11 +560,23 @@
         showView('main'); // Ensure the main menu is the default view
         updateSelection();
 
+        // Helper to check if screen-area is displaying an item (not just the menu)
+        function isViewingItem() {
+            const screenArea = document.querySelector('.screen-area');
+            // If screenArea has a back-button, we are viewing/playing an item
+            return !!screenArea.querySelector('.back-button');
+        }
+
         // Event listeners for navigation buttons
         document.getElementById('nav-up').addEventListener('click', () => navigate('up'));
         document.getElementById('nav-down').addEventListener('click', () => navigate('down'));
         document.getElementById('nav-left').addEventListener('click', () => {
-            if (currentView !== 'main') {
+            const screenArea = document.querySelector('.screen-area');
+            if (isViewingItem()) {
+                // If viewing/playing, clear and return to submenu
+                screenArea.innerHTML = '';
+                // Stay in the current submenu
+            } else if (currentView !== 'main') {
                 showView('main');
             }
         });
@@ -604,9 +596,15 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowUp') navigate('up');
             if (e.key === 'ArrowDown') navigate('down');
-            if (e.key === 'ArrowLeft' && currentView !== 'main') showView('main');
+            if ((e.key === 'ArrowLeft' || e.key === 'Escape')) {
+                const screenArea = document.querySelector('.screen-area');
+                if (isViewingItem()) {
+                    screenArea.innerHTML = '';
+                } else if (currentView !== 'main') {
+                    showView('main');
+                }
+            }
             if (e.key === 'ArrowRight' || e.key === 'Enter') selectItem();
-            if (e.key === 'Escape' && currentView !== 'main') showView('main');
         });
 
         // Ensure the main menu is the first view to load
