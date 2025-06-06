@@ -154,8 +154,11 @@
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: #000;
-            box-shadow: 0 0 0 2px #222, 0 8px 32px rgba(0,0,0,0.8);
+            background: linear-gradient(145deg, #2c2c2c, #1a1a2a);
+            box-shadow: 
+                inset 0 5px 10px rgba(0, 0, 0, 0.5),
+                inset 0 -5px 10px rgba(255, 255, 255, 0.05),
+                0 5px 15px rgba(0, 0, 0, 0.3);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -168,26 +171,31 @@
             position: absolute;
             width: 25px;
             height: 25px;
-            background: #000;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.1s ease;
-            border: none;
         }
 
         .nav-button:hover {
-            background: #222;
+            background: rgba(255, 255, 255, 0.2);
         }
+
+        .nav-up { top: 10px; left: 50%; transform: translateX(-50%); }
+        .nav-down { bottom: 10px; left: 50%; transform: translateX(-50%); }
+        .nav-left { left: 10px; top: 50%; transform: translateY(-50%); }
+        .nav-right { right: 10px; top: 50%; transform: translateY(-50%); }
 
         .center-button {
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: #000;
-            box-shadow: 0 0 0 3px #444;
+            background: linear-gradient(145deg, #4a4a4a, #2a2a2a);
+            box-shadow: 
+                0 3px 6px rgba(0, 0, 0, 0.4),
+                inset 0 1px 2px rgba(255, 255, 255, 0.1);
             cursor: pointer;
             transition: all 0.1s ease;
-            border: none;
         }
 
         .center-button:active {
@@ -570,8 +578,6 @@
                 screenArea.innerHTML = '';
                 screenArea.appendChild(screenDiv);
                 showView(lastSubmenu || 'main');
-                // Clear now-playing text when returning from content view
-                document.getElementById('now-playing').textContent = '';
             } else if (currentView !== 'main') {
                 showView('main');
             }
@@ -598,8 +604,6 @@
                     screenArea.innerHTML = '';
                     screenArea.appendChild(screenDiv);
                     showView(lastSubmenu || 'main');
-                    // Clear now-playing text when returning from content view
-                    document.getElementById('now-playing').textContent = '';
                 } else if (currentView !== 'main') {
                     showView('main');
                 }
