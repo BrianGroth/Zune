@@ -360,6 +360,9 @@
             }
         }
 
+        // Helper to track the last submenu viewed
+        let lastSubmenu = null;
+
         function handleContentSelection(item) {
             const track = item.dataset.track;
             const video = item.dataset.video;
@@ -368,6 +371,9 @@
             const nowPlaying = document.getElementById('now-playing');
             const audio = document.getElementById('audio');
             const screenArea = document.querySelector('.screen-area');
+
+            // Track which submenu we're in for back navigation
+            lastSubmenu = currentView;
 
             // No back button in the UI; navigation is only via nav-left or keyboard
 
@@ -421,44 +427,6 @@
                     radioImg.style.objectFit = 'cover';
                     screenArea.appendChild(radioImg);
                 }
-            }
-        }
-
-        function populateSubMenu(viewName, data) {
-            const viewElement = views[viewName];
-            viewElement.innerHTML = '';
-            data.forEach((item) => {
-                const contentItem = document.createElement('div');
-                contentItem.classList.add('content-item');
-                if (viewName === 'music') {
-                    contentItem.dataset.track = item.src;
-                    contentItem.textContent = `${item.title} - ${item.artist}`;
-                } else if (viewName === 'videos') {
-                    contentItem.dataset.video = item.src;
-                    contentItem.textContent = item.name;
-                } else if (viewName === 'pictures') {
-                    contentItem.dataset.picture = item.src;
-                    contentItem.textContent = item.name;
-                } else if (viewName === 'radio') {
-                    contentItem.dataset.station = item.src;
-                    contentItem.textContent = item.name;
-                }
-                contentItem.addEventListener('click', () => handleContentSelection(contentItem));
-                viewElement.appendChild(contentItem);
-            });
-            // Do NOT add a back button here
-        }
-
-        // Helper function to remove JSON comments and parse
-        function parseJSON(text) {
-            // Remove single line comments
-            text = text.replace(/\/\/.*$/gm, '');
-            // Try to parse the JSON
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                console.error('JSON parse error:', e);
-                return null;
             }
         }
 
@@ -560,20 +528,13 @@
         showView('main'); // Ensure the main menu is the default view
         updateSelection();
 
-        // Helper to check if screen-area is displaying an item (not just the menu)
-        function isViewingItem() {
-            const screenArea = document.querySelector('.screen-area');
-            // If screenArea has a back-button, we are viewing/playing an item
-            return !!screenArea.querySelector('.back-button');
-        }
-
         // Event listeners for navigation buttons
         document.getElementById('nav-up').addEventListener('click', () => navigate('up'));
         document.getElementById('nav-down').addEventListener('click', () => navigate('down'));
         document.getElementById('nav-left').addEventListener('click', () => {
             const screenArea = document.querySelector('.screen-area');
-            if (isViewingItem()) {
-                // If viewing/playing, clear and return to submenu
+            // If viewing/playing an item (screenArea is not empty and not just showing the menu)
+            if (screenArea.innerHTML.trim() !== '' && !screenArea.querySelector('.screen')) {
                 screenArea.innerHTML = '';
                 // Stay in the current submenu
             } else if (currentView !== 'main') {
@@ -598,7 +559,7 @@
             if (e.key === 'ArrowDown') navigate('down');
             if ((e.key === 'ArrowLeft' || e.key === 'Escape')) {
                 const screenArea = document.querySelector('.screen-area');
-                if (isViewingItem()) {
+                if (screenArea.innerHTML.trim() !== '' && !screenArea.querySelector('.screen')) {
                     screenArea.innerHTML = '';
                 } else if (currentView !== 'main') {
                     showView('main');
