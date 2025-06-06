@@ -442,12 +442,19 @@
         fetch('music.json').then(response => response.json()).then(data => populateSubMenu('music', data));
         fetch('videos.json').then(response => response.json()).then(data => populateSubMenu('videos', data));
         fetch('pictures.json').then(response => response.json()).then(data => populateSubMenu('pictures', data));
+        fetch('radio.json').then(response => response.json()).then(data => populateSubMenu('radio', data));
 
         // Event listeners for navigation buttons
         document.getElementById('nav-up').addEventListener('click', () => navigate('up'));
         document.getElementById('nav-down').addEventListener('click', () => navigate('down'));
         document.getElementById('nav-left').addEventListener('click', () => {
-            showView('main');
+            if (currentView !== 'main') {
+                showView('main');
+            } else {
+                const screenArea = document.querySelector('.screen-area');
+                screenArea.innerHTML = '';
+                showView('main');
+            }
         });
         document.getElementById('nav-right').addEventListener('click', selectItem);
         document.getElementById('select-btn').addEventListener('click', selectItem);
