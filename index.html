@@ -369,19 +369,34 @@
             const audio = document.getElementById('audio');
             const screenArea = document.querySelector('.screen-area');
 
+            // Helper to add a back button to the screen area
+            function addScreenBackButton(submenu) {
+                const backBtn = document.createElement('div');
+                backBtn.className = 'back-button';
+                backBtn.textContent = 'Back';
+                backBtn.style.position = 'absolute';
+                backBtn.style.top = '10px';
+                backBtn.style.left = '10px';
+                backBtn.style.zIndex = '10';
+                backBtn.addEventListener('click', function() {
+                    showView(submenu);
+                    screenArea.innerHTML = '';
+                });
+                screenArea.appendChild(backBtn);
+            }
+
             if (track) {
                 audio.src = track;
                 audio.play().catch(e => console.log('Audio play failed:', e));
                 nowPlaying.textContent = `♪ ${item.textContent}`;
-
-                // Show album art if available, else just a default
                 screenArea.innerHTML = '';
                 const albumArt = document.createElement('img');
-                albumArt.src = 'Music/ABBA Greatest Hits/AlbumArt.png'; // You can enhance this to use item.cover if available
+                albumArt.src = 'Music/ABBA Greatest Hits/AlbumArt.png';
                 albumArt.style.width = '100%';
                 albumArt.style.height = '100%';
                 albumArt.style.objectFit = 'cover';
                 screenArea.appendChild(albumArt);
+                addScreenBackButton('music');
             } else if (video) {
                 nowPlaying.textContent = `📺 ${item.textContent}`;
                 screenArea.innerHTML = '';
@@ -392,6 +407,7 @@
                 videoElement.style.height = '100%';
                 screenArea.appendChild(videoElement);
                 videoElement.play().catch(e => console.log('Video play failed:', e));
+                addScreenBackButton('videos');
             } else if (picture) {
                 nowPlaying.textContent = `🖼️ Viewing ${item.textContent}`;
                 screenArea.innerHTML = '';
@@ -401,10 +417,10 @@
                 imageElement.style.height = '100%';
                 imageElement.style.objectFit = 'cover';
                 screenArea.appendChild(imageElement);
+                addScreenBackButton('pictures');
             } else if (station) {
                 nowPlaying.textContent = `📻 ${item.textContent}`;
                 screenArea.innerHTML = '';
-                // If the station is an image, show it; if it's a stream, play it
                 if (station.match(/\.(jpg|jpeg|png|gif)$/i)) {
                     const imageElement = document.createElement('img');
                     imageElement.src = station;
@@ -415,14 +431,14 @@
                 } else {
                     audio.src = station;
                     audio.play().catch(e => console.log('Radio play failed:', e));
-                    // Optionally show a radio icon or default image
                     const radioImg = document.createElement('img');
-                    radioImg.src = 'radio.png'; // Use a default radio image if you have one
+                    radioImg.src = 'radio.png';
                     radioImg.style.width = '100%';
                     radioImg.style.height = '100%';
                     radioImg.style.objectFit = 'cover';
                     screenArea.appendChild(radioImg);
                 }
+                addScreenBackButton('radio');
             }
         }
 
