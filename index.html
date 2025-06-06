@@ -259,7 +259,7 @@
             </div>
         </div>
 
-        <div class="zune-logo">ZUNE</div>
+        <div class="zune-logo">THE ORIGINAL ZUNE</div>
     </div>
 
     <audio id="audio"></audio>
@@ -414,7 +414,7 @@
             const viewElement = views[viewName];
             viewElement.innerHTML = '';
 
-            data.forEach(item => {
+            data.forEach((item, index) => {
                 const contentItem = document.createElement('div');
                 contentItem.classList.add('content-item');
 
@@ -427,9 +427,17 @@
                 } else if (viewName === 'pictures') {
                     contentItem.dataset.picture = item.src;
                     contentItem.textContent = item.name;
+                } else if (viewName === 'radio') {
+                    contentItem.dataset.station = item.src;
+                    contentItem.textContent = item.name;
                 }
 
                 viewElement.appendChild(contentItem);
+
+                // Automatically select the first item for radio
+                if (viewName === 'radio' && index === 0) {
+                    handleContentSelection(contentItem);
+                }
             });
 
             const backButton = document.createElement('div');
