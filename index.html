@@ -259,7 +259,7 @@
             </div>
         </div>
 
-        <div class="zune-logo">TORIGINAL ZUNE</div>
+        <div class="zune-logo">ZUNE</div>
     </div>
 
     <audio id="audio"></audio>
@@ -449,6 +449,10 @@
         fetch('pictures.json').then(response => response.json()).then(data => populateSubMenu('pictures', data));
         fetch('radio.json').then(response => response.json()).then(data => populateSubMenu('radio', data));
 
+        // Initialize
+        showView('main'); // Ensure the main menu is the default view
+        updateSelection();
+
         // Event listeners for navigation buttons
         document.getElementById('nav-up').addEventListener('click', () => navigate('up'));
         document.getElementById('nav-down').addEventListener('click', () => navigate('down'));
@@ -493,6 +497,7 @@
         });
 
         // Initialize
+        showView('main');
         updateSelection();
     </script>
 </body>
