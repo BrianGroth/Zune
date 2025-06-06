@@ -285,7 +285,7 @@
                 });
             } else {
                 const currentViewEl = views[currentView];
-                const items = currentViewEl.querySelectorAll('.content-item, .back-button');
+                const items = currentViewEl.querySelectorAll('.content-item');
                 items.forEach((item, index) => {
                     item.classList.toggle('selected', index === currentContentIndex);
                 });
@@ -301,7 +301,7 @@
                 }
             } else {
                 const currentViewEl = views[currentView];
-                const items = currentViewEl.querySelectorAll('.content-item, .back-button');
+                const items = currentViewEl.querySelectorAll('.content-item');
                 if (direction === 'up') {
                     currentContentIndex = Math.max(0, currentContentIndex - 1);
                 } else if (direction === 'down') {
@@ -317,40 +317,35 @@
                 showView(selectedItem);
             } else {
                 const currentViewEl = views[currentView];
-                const items = currentViewEl.querySelectorAll('.content-item, .back-button');
+                const items = currentViewEl.querySelectorAll('.content-item');
                 const selectedItem = items[currentContentIndex];
                 
-                if (selectedItem.classList.contains('back-button')) {
-                    showView('main');
-                } else {
+                if (selectedItem) {
                     handleContentSelection(selectedItem);
                 }
             }
         }
 
         function showView(viewName) {
-            // Hide all views
+            // Hide all views by removing active class
             Object.values(views).forEach(view => {
                 view.classList.remove('active');
-                if (view.classList.contains('menu-screen')) {
-                    view.classList.remove('active');
-                }
-                if (view.classList.contains('content-view')) {
-                    view.classList.remove('active');
-                }
             });
             
             // Show selected view
-            views[viewName].classList.add('active');
-            currentView = viewName;
-            currentContentIndex = 0;
-            
-            if (viewName === 'main') {
-                // Reset to main menu
-                currentMenuIndex = 0;
+            const targetView = views[viewName];
+            if (targetView) {
+                targetView.classList.add('active');
+                currentView = viewName;
+                currentContentIndex = 0;
+                
+                if (viewName === 'main') {
+                    // Reset to main menu
+                    currentMenuIndex = 0;
+                }
+                
+                updateSelection();
             }
-            
-            updateSelection();
         }
 
         function handleContentSelection(item) {
@@ -427,12 +422,6 @@
                 contentItem.addEventListener('click', () => handleContentSelection(contentItem));
                 viewElement.appendChild(contentItem);
             });
-
-            const backButton = document.createElement('div');
-            backButton.classList.add('back-button');
-            backButton.textContent = 'Back';
-            backButton.addEventListener('click', () => showView('main'));
-            viewElement.appendChild(backButton);
         }
 
         // Helper function to remove JSON comments and parse
@@ -447,6 +436,32 @@
                 return null;
             }
         }
+
+        // Mock data for demonstration (replace with your actual JSON loading)
+        const mockData = {
+            music: [
+                { title: "Dancing Queen", artist: "ABBA", src: "music/abba-dancing-queen.mp3" },
+                { title: "Mamma Mia", artist: "ABBA", src: "music/abba-mamma-mia.mp3" },
+                { title: "Fernando", artist: "ABBA", src: "music/abba-fernando.mp3" }
+            ],
+            videos: [
+                { name: "Concert Video 1", src: "videos/concert1.mp4" },
+                { name: "Music Video 2", src: "videos/video2.mp4" }
+            ],
+            pictures: [
+                { name: "Sunset", src: "pictures/sunset.jpg" },
+                { name: "Mountain", src: "pictures/mountain.jpg" }
+            ],
+            radio: [
+                { name: "Classic Rock FM", src: "radio/classic-rock.mp3" },
+                { name: "Jazz Station", src: "radio/jazz.mp3" }
+            ]
+        };
+
+        // Initialize with mock data
+        Object.keys(mockData).forEach(category => {
+            populateSubMenu(category, mockData[category]);
+        });
 
         // Load JSON data and populate submenus with error handling
         fetch('music.json')
@@ -526,10 +541,6 @@
         document.getElementById('nav-left').addEventListener('click', () => {
             if (currentView !== 'main') {
                 showView('main');
-            } else {
-                const screenArea = document.querySelector('.screen-area');
-                screenArea.innerHTML = '';
-                showView('main');
             }
         });
         document.getElementById('nav-right').addEventListener('click', selectItem);
@@ -542,16 +553,6 @@
                 updateSelection();
                 selectItem();
             });
-        });
-
-        // Event listeners for back buttons
-        document.querySelectorAll('.back-button').forEach(button => {
-            button.addEventListener('click', () => showView('main'));
-        });
-
-        // Event listeners for content items
-        document.querySelectorAll('.content-item').forEach(item => {
-            item.addEventListener('click', () => handleContentSelection(item));
         });
 
         // Keyboard navigation
