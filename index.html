@@ -167,18 +167,44 @@
 
         .nav-button {
             position: absolute;
-            width: 25px;
-            height: 25px;
+            width: 40px;
+            height: 40px;
             background: #000;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.1s ease;
             border: none;
-            z-index: 2; /* Ensure nav buttons are clickable */
+            z-index: 2;
+            opacity: 0; /* Fully invisible but clickable */
         }
 
         .nav-button:hover {
             background: #222;
+            opacity: 0.1;
+        }
+
+        .nav-up {
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+
+        .nav-down {
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+
+        .nav-left {
+            left: 0;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+
+        .nav-right {
+            right: 0;
+            top: 50%;
+            transform: translate(0, -50%);
         }
 
         /* Remove all nav button arrows: no ::after content for nav buttons */
