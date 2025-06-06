@@ -367,19 +367,62 @@
             const station = item.dataset.station;
             const nowPlaying = document.getElementById('now-playing');
             const audio = document.getElementById('audio');
+            const screenArea = document.querySelector('.screen-area');
 
-            // Just update the now playing text and play the media, don't replace the screen
             if (track) {
                 audio.src = track;
                 audio.play().catch(e => console.log('Audio play failed:', e));
                 nowPlaying.textContent = `♪ ${item.textContent}`;
+
+                // Show album art if available, else just a default
+                screenArea.innerHTML = '';
+                const albumArt = document.createElement('img');
+                albumArt.src = 'Music/ABBA Greatest Hits/AlbumArt.png'; // You can enhance this to use item.cover if available
+                albumArt.style.width = '100%';
+                albumArt.style.height = '100%';
+                albumArt.style.objectFit = 'cover';
+                screenArea.appendChild(albumArt);
             } else if (video) {
                 nowPlaying.textContent = `📺 ${item.textContent}`;
-                // For demo purposes, just show in now-playing since we can't play video in this context
+                screenArea.innerHTML = '';
+                const videoElement = document.createElement('video');
+                videoElement.src = video;
+                videoElement.controls = true;
+                videoElement.style.width = '100%';
+                videoElement.style.height = '100%';
+                screenArea.appendChild(videoElement);
+                videoElement.play().catch(e => console.log('Video play failed:', e));
             } else if (picture) {
                 nowPlaying.textContent = `🖼️ Viewing ${item.textContent}`;
+                screenArea.innerHTML = '';
+                const imageElement = document.createElement('img');
+                imageElement.src = picture;
+                imageElement.style.width = '100%';
+                imageElement.style.height = '100%';
+                imageElement.style.objectFit = 'cover';
+                screenArea.appendChild(imageElement);
             } else if (station) {
                 nowPlaying.textContent = `📻 ${item.textContent}`;
+                screenArea.innerHTML = '';
+                // If the station is an image, show it; if it's a stream, play it
+                if (station.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                    const imageElement = document.createElement('img');
+                    imageElement.src = station;
+                    imageElement.style.width = '100%';
+                    imageElement.style.height = '100%';
+                    imageElement.style.objectFit = 'cover';
+                    screenArea.appendChild(imageElement);
+                } else {
+                    audio.src = station;
+                    audio.play().catch(e => console.log('Radio play failed:', e));
+                    // Optionally show a radio icon or default image
+                    const radioImg = document.createElement('img');
+                    radioImg.src = 'radio.png'; // Use a default radio image if you have one
+                    radioImg.style.width = '100%';
+                    radioImg.style.height = '100%';
+                    radioImg.style.objectFit = 'cover';
+                    screenArea.appendChild(radioImg);
+                }
             }
         }
 
