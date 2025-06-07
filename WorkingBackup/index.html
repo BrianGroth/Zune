@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zune Device</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+    .zune-device {
+      background: #3e2a1e;
+      border: 3px solid #6b4a35;
+      border-radius: 20px;
+      width: 320px;
+      height: 480px;
+      padding: 20px;
+      position: relative;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    }
+
+        .screen-area {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            right: 25px;
+            height: 280px;
+            background: #000;
+            border-radius: 8px;
+            box-shadow: 
+                inset 0 3px 6px rgba(0, 0, 0, 0.8),
+                0 1px 2px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #111, #000);
+            color: white;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            font-size: 24px;
+            font-weight: 300;
+            line-height: 1.3;
+            position: relative;
+        }
+
+        .menu-screen {
+            display: none;
+        }
+
+        .menu-screen.active {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 8px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            padding-left: 8px;
+            margin: 2px 0;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .menu-item.selected {
+            background: linear-gradient(90deg, #FF6B00, #FF8C00);
+            color: white;
+            font-weight: 400;
+        }
+
+        .content-view {
+            display: none;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .content-view.active {
+            display: block;
+        }
+
+        .content-item {
+            padding: 8px;
+            margin: 4px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .content-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(3px);
+        }
+
+        .content-item.selected {
+            background: linear-gradient(90deg, #FF6B00, #FF8C00);
+        }
+
+        .back-button {
+            padding: 8px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .now-playing {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            right: 15px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .zune-pad {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #000;
+            box-shadow: 0 0 0 2px #222, 0 8px 32px rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-button {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #000;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            border: none;
+            z-index: 2;
+            opacity: 0; /* Fully invisible but clickable */
+        }
+
+        .nav-button:hover {
+            background: #222;
+            opacity: 0.1;
+        }
+
+        .nav-up {
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+
+        .nav-down {
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+
+        .nav-left {
+            left: 0;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+
+        .nav-right {
+            right: 0;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+
+        /* Remove all nav button arrows: no ::after content for nav buttons */
+        .nav-up::after, .nav-down::after, .nav-left::after, .nav-right::after {
+            content: none;
+        }
+
+        .center-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #000;
+            box-shadow: 0 0 0 3px #444;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            border: none;
+        }
+
+        .center-button:active {
+            transform: scale(0.95);
+        }
+
+        .zune-logo {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="zune-device">
+        <div class="screen-area">
+            <div class="screen">
+                <!-- Main Menu -->
+                <div class="menu-screen active" id="main-menu">
+                    <div class="menu-item selected" data-menu="music">music</div>
+                    <div class="menu-item" data-menu="videos">videos</div>
+                    <div class="menu-item" data-menu="pictures">pictures</div>
+                    <div class="menu-item" data-menu="radio">radio</div>
+                </div>
+
+                <!-- Music View -->
+                <div class="content-view" id="music-view">
+                </div>
+
+                <!-- Videos View -->
+                <div class="content-view" id="videos-view">
+                </div>
+
+                <!-- Pictures View -->
+                <div class="content-view" id="pictures-view">
+                </div>
+
+                <!-- Radio View -->
+                <div class="content-view" id="radio-view">
+                </div>
+
+                <div class="now-playing" id="now-playing"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="zune-pad">
+                <div class="nav-button nav-up" id="nav-up"></div>
+                <div class="nav-button nav-down" id="nav-down"></div>
+                <div class="nav-button nav-left" id="nav-left"></div>
+                <div class="nav-button nav-right" id="nav-right"></div>
+                <div class="center-button" id="select-btn"></div>
+            </div>
+        </div>
+
+        <div class="zune-logo">ZUNE</div>
+    </div>
+
+    <audio id="audio"></audio>
+
+    <script>
+        let currentMenuIndex = 0;
+        let currentView = 'main';
+        let currentContentIndex = 0;
+        
+        const mainMenuItems = document.querySelectorAll('#main-menu .menu-item');
+        const views = {
+            main: document.getElementById('main-menu'),
+            music: document.getElementById('music-view'),
+            videos: document.getElementById('videos-view'),
+            pictures: document.getElementById('pictures-view'),
+            radio: document.getElementById('radio-view')
+        };
+
+        // Helper to track the last submenu viewed
+        let lastSubmenu = null;
+        let isViewingContent = false;
+        const screenArea = document.querySelector('.screen-area');
+        const screenDiv = document.querySelector('.screen');
+
+        // Added missing parseJSON function
+        function parseJSON(text) {
+            try {
+                return JSON.parse(text);
+            } catch (error) {
+                console.error('JSON parse error:', error);
+                return null;
+            }
+        }
+
+        // Added missing populateSubMenu function
+        function populateSubMenu(category, data) {
+            const viewElement = views[category];
+            if (!viewElement || !data) return;
+
+            // Clear existing content
+            viewElement.innerHTML = '';
+
+            // Add back button
+            const backButton = document.createElement('div');
+            backButton.className = 'back-button';
+            backButton.textContent = '← Back';
+            backButton.addEventListener('click', () => showView('main'));
+            viewElement.appendChild(backButton);
+
+            // Add content items
+            data.forEach((item) => {
+                const contentItem = document.createElement('div');
+                contentItem.className = 'content-item';
+                
+                if (category === 'music') {
+                    contentItem.textContent = `${item.title} - ${item.artist}`;
+                    contentItem.dataset.track = item.src;
+                } else if (category === 'videos') {
+                    contentItem.textContent = item.name;
+                    contentItem.dataset.video = item.src;
+                } else if (category === 'pictures') {
+                    contentItem.textContent = item.name;
+                    contentItem.dataset.picture = item.src;
+                } else if (category === 'radio') {
+                    contentItem.textContent = item.name;
+                    contentItem.dataset.station = item.src;
+                }
+                
+                viewElement.appendChild(contentItem);
+            });
+        }
+
+        function updateSelection() {
+            if (currentView === 'main') {
+                mainMenuItems.forEach((item, index) => {
+                    item.classList.toggle('selected', index === currentMenuIndex);
+                });
+            } else {
+                const currentViewEl = views[currentView];
+                const items = currentViewEl.querySelectorAll('.content-item');
+                items.forEach((item, index) => {
+                    item.classList.toggle('selected', index === currentContentIndex);
+                });
+            }
+        }
+
+        function navigate(direction) {
+            if (currentView === 'main') {
+                if (direction === 'up') {
+                    currentMenuIndex = Math.max(0, currentMenuIndex - 1);
+                } else if (direction === 'down') {
+                    currentMenuIndex = Math.min(mainMenuItems.length - 1, currentMenuIndex + 1);
+                }
+            } else {
+                const currentViewEl = views[currentView];
+                const items = currentViewEl.querySelectorAll('.content-item');
+                if (direction === 'up') {
+                    currentContentIndex = Math.max(0, currentContentIndex - 1);
+                } else if (direction === 'down') {
+                    currentContentIndex = Math.min(items.length - 1, currentContentIndex + 1);
+                }
+            }
+            updateSelection();
+        }
+
+        function selectItem() {
+            if (currentView === 'main') {
+                const selectedItem = mainMenuItems[currentMenuIndex].dataset.menu;
+                showView(selectedItem);
+            } else {
+                const currentViewEl = views[currentView];
+                const items = currentViewEl.querySelectorAll('.content-item');
+                const selectedItem = items[currentContentIndex];
+                
+                if (selectedItem) {
+                    handleContentSelection(selectedItem);
+                }
+            }
+        }
+
+        function showView(viewName) {
+            // Hide all views by removing active class
+            Object.values(views).forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Show selected view
+            const targetView = views[viewName];
+            if (targetView) {
+                targetView.classList.add('active');
+                currentView = viewName;
+                currentContentIndex = 0;
+                
+                if (viewName === 'main') {
+                    // Reset to main menu
+                    currentMenuIndex = 0;
+                }
+                
+                updateSelection();
+            }
+        }
+
+        function handleContentSelection(item) {
+            const track = item.dataset.track;
+            const video = item.dataset.video;
+            const picture = item.dataset.picture;
+            const station = item.dataset.station;
+            const nowPlaying = document.getElementById('now-playing');
+            const audio = document.getElementById('audio');
+
+            // Track which submenu we're in for back navigation
+            lastSubmenu = currentView;
+            isViewingContent = true;
+
+            // Hide all views
+            Object.values(views).forEach(view => view.classList.remove('active'));
+            // Remove the .screen div so only content is shown
+            if (screenDiv.parentNode === screenArea) {
+                screenArea.removeChild(screenDiv);
+            }
+
+            if (track) {
+                audio.src = track;
+                audio.play().catch(e => console.log('Audio play failed:', e));
+                nowPlaying.textContent = `♪ ${item.textContent}`;
+                screenArea.innerHTML = '';
+                const albumArt = document.createElement('img');
+                albumArt.src = 'Music/ABBA Greatest Hits/AlbumArt.png';
+                albumArt.style.width = '100%';
+                albumArt.style.height = '100%';
+                albumArt.style.objectFit = 'cover';
+                screenArea.appendChild(albumArt);
+            } else if (video) {
+                nowPlaying.textContent = `📺 ${item.textContent}`;
+                screenArea.innerHTML = '';
+                const videoElement = document.createElement('video');
+                videoElement.src = video;
+                videoElement.controls = true;
+                videoElement.style.width = '100%';
+                videoElement.style.height = '100%';
+                screenArea.appendChild(videoElement);
+                videoElement.play().catch(e => console.log('Video play failed:', e));
+            } else if (picture) {
+                nowPlaying.textContent = `🖼️ Viewing ${item.textContent}`;
+                screenArea.innerHTML = '';
+                const imageElement = document.createElement('img');
+                imageElement.src = picture;
+                imageElement.style.width = '100%';
+                imageElement.style.height = '100%';
+                imageElement.style.objectFit = 'cover';
+                screenArea.appendChild(imageElement);
+            } else if (station) {
+                nowPlaying.textContent = `📻 ${item.textContent}`;
+                screenArea.innerHTML = '';
+                if (station.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                    const imageElement = document.createElement('img');
+                    imageElement.src = station;
+                    imageElement.style.width = '100%';
+                    imageElement.style.height = '100%';
+                    imageElement.style.objectFit = 'cover';
+                    screenArea.appendChild(imageElement);
+                } else {
+                    audio.src = station;
+                    audio.play().catch(e => console.log('Radio play failed:', e));
+                    const radioImg = document.createElement('img');
+                    radioImg.src = 'radio.png';
+                    radioImg.style.width = '100%';
+                    radioImg.style.height = '100%';
+                    radioImg.style.objectFit = 'cover';
+                    screenArea.appendChild(radioImg);
+                }
+            }
+        }
+
+        // Mock data for demonstration (replace with your actual JSON loading)
+        const mockData = {
+            music: [
+                { title: "Dancing Queen", artist: "ABBA", src: "music/abba-dancing-queen.mp3" },
+                { title: "Mamma Mia", artist: "ABBA", src: "music/abba-mamma-mia.mp3" },
+                { title: "Fernando", artist: "ABBA", src: "music/abba-fernando.mp3" }
+            ],
+            videos: [
+                { name: "Concert Video 1", src: "videos/concert1.mp4" },
+                { name: "Music Video 2", src: "videos/video2.mp4" }
+            ],
+            pictures: [
+                { name: "Sunset", src: "pictures/sunset.jpg" },
+                { name: "Mountain", src: "pictures/mountain.jpg" }
+            ],
+            radio: [
+                { name: "Classic Rock FM", src: "radio/classic-rock.mp3" },
+                { name: "Jazz Station", src: "radio/jazz.mp3" }
+            ]
+        };
+
+        // Initialize with mock data
+        Object.keys(mockData).forEach(category => {
+            populateSubMenu(category, mockData[category]);
+        });
+
+        // Load JSON data and populate submenus with error handling
+        fetch('music.json')
+            .then(response => {
+                if (!response.ok) {
+                    console.error('HTTP Error Response:', response.status);
+                    throw new Error('Failed to fetch music data');
+                }
+                return response.text();
+            })
+            .then(text => {
+                const data = parseJSON(text);
+                console.log('Music data loaded:', data);
+                if (data && data.length > 0) {
+                    populateSubMenu('music', data);
+                } else {
+                    console.error('Music data is empty or invalid');
+                }
+            })
+            .catch(error => console.error('Error loading music:', error));
+
+        fetch('videos.json')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch videos data');
+                return response.text();
+            })
+            .then(text => {
+                const data = parseJSON(text);
+                console.log('Videos data loaded:', data);
+                if (data && data.length > 0) {
+                    populateSubMenu('videos', data);
+                } else {
+                    console.error('Videos data is empty or invalid');
+                }
+            })
+            .catch(error => console.error('Error loading videos:', error));
+
+        fetch('pictures.json')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch pictures data');
+                return response.text();
+            })
+            .then(text => {
+                const data = parseJSON(text);
+                console.log('Pictures data loaded:', data);
+                if (data && data.length > 0) {
+                    populateSubMenu('pictures', data);
+                } else {
+                    console.error('Pictures data is empty or invalid');
+                }
+            })
+            .catch(error => console.error('Error loading pictures:', error));
+
+        fetch('radio.json')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch radio data');
+                return response.text();
+            })
+            .then(text => {
+                const data = parseJSON(text);
+                console.log('Radio data loaded:', data);
+                if (data && data.length > 0) {
+                    populateSubMenu('radio', data);
+                } else {
+                    console.error('Radio data is empty or invalid');
+                }
+            })
+            .catch(error => console.error('Error loading radio:', error));
+
+        // Initialize
+        showView('main'); // Ensure the main menu is the default view
+        updateSelection();
+
+        // Event listeners for navigation buttons
+        document.getElementById('nav-up').addEventListener('click', () => navigate('up'));
+        document.getElementById('nav-down').addEventListener('click', () => navigate('down'));
+        document.getElementById('nav-left').addEventListener('click', () => {
+            if (isViewingContent) {
+                isViewingContent = false;
+                screenArea.innerHTML = '';
+                screenArea.appendChild(screenDiv);
+                showView(lastSubmenu || 'main');
+                // Clear now-playing text when returning from content view
+                document.getElementById('now-playing').textContent = '';
+            } else if (currentView !== 'main') {
+                showView('main');
+            }
+        });
+        document.getElementById('nav-right').addEventListener('click', selectItem);
+        document.getElementById('select-btn').addEventListener('click', selectItem);
+
+        // Event listeners for direct menu item clicks
+        mainMenuItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                currentMenuIndex = index;
+                updateSelection();
+                selectItem();
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') navigate('up');
+            if (e.key === 'ArrowDown') navigate('down');
+            if ((e.key === 'ArrowLeft' || e.key === 'Escape')) {
+                if (isViewingContent) {
+                    isViewingContent = false;
+                    screenArea.innerHTML = '';
+                    screenArea.appendChild(screenDiv);
+                    showView(lastSubmenu || 'main');
+                    // Clear now-playing text when returning from content view
+                    document.getElementById('now-playing').textContent = '';
+                } else if (currentView !== 'main') {
+                    showView('main');
+                }
+            }
+            if (e.key === 'ArrowRight' || e.key === 'Enter') selectItem();
+        });
+
+        // Ensure the main menu is the first view to load
+        showView('main');
+        updateSelection();
+    </script>
+</body>
+</html>
